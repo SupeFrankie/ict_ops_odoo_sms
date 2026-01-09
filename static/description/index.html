@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Ops Odoo SMS Marketing Module</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #003DA5 0%, #8B0000 100%);
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #003DA5;
+            border-bottom: 3px solid #FFD700;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #8B0000;
+            margin-top: 30px;
+        }
+        .feature {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #003DA5;
+            border-radius: 5px;
+        }
+        .feature h3 {
+            margin-top: 0;
+            color: #003DA5;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        ul li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        ul li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #003DA5;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 5px 5px 5px 0;
+        }
+        .badge:nth-child(even) {
+            background: #8B0000;
+        }
+        .badge:nth-child(3n) {
+            background: #FFD700;
+            color: #333;
+        }
+        .screenshots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .screenshot {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        .cta {
+            background: linear-gradient(135deg, #003DA5 0%, #8B0000 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 40px 0;
+            border: 3px solid #FFD700;
+        }
+        .cta h2 {
+            color: white;
+            margin-top: 0;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border-left: 4px solid #FFD700;
+        }
+        ol {
+            padding-left: 20px;
+        }
+        ol li {
+            padding: 5px 0;
+            color: #333;
+        }
+        strong {
+            color: #003DA5;
+        }
+        hr {
+            margin: 40px 0;
+            border: none;
+            border-top: 2px solid #FFD700;
+        }
+        .highlight-box {
+            background: linear-gradient(to right, #003DA5 0%, #8B0000 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .highlight-box h3 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> ICT Ops Odoo SMS Marketing Module</h1>
+        
+        <p style="font-size: 18px; color: #666;">
+            A powerful and comprehensive SMS marketing solution for Strathmore University, that enables departments to 
+            send bulk SMS campaigns, manage recipients, track delivery status.
+        </p>
+
+        <div style="margin: 20px 0;">
+            <span class="badge">Odoo 19.0</span>
+            <span class="badge">SMS Marketing</span>
+            <span class="badge">Bulk SMS</span>
+            <span class="badge">Africa's Talking</span>
+        </div>
+
+        <h2> Key Features</h2>
+
+        <div class="feature">
+            <h3> Campaign Management</h3>
+            <ul>
+                <li>Create and manage SMS campaigns with ease</li>
+                <li>Schedule campaigns for future delivery</li>
+                <li>Track campaign status in real-time</li>
+                <li>View detailed statistics and success rates</li>
+                <li>Monitor sent, failed, and pending messages</li>
+                <li>Duplicate existing campaigns for quick setup</li>
+            </ul>
+        </div>
+
+        <div class="feature">
+            <h3> Recipient Management</h3>
+            <ul>
+                <li>Import recipients from CSV files</li>
+                <li>Manually add recipients to campaigns</li>
+                <li>Track individual recipient status</li>
+                <li>View delivery confirmation and error messages</li>
+                <li>Bulk recipient operations</li>
+            </ul>
+        </div>
+
+        <div class="feature">
+            <h3> SMS Blacklist</h3>
+            <ul>
+                <li>Prevent sending SMS to unwanted recipients</li>
+                <li>Maintain a blacklist of phone numbers</li>
+                <li>Automatically prevent sending to blacklisted numbers</li>
+                <li>Add reasons for blacklisting</li>
+                <li>Manage active/inactive blacklist entries</li>
+                <li>Import blacklist from external sources</li>
+            </ul>
+        </div>
+
+        <div class="feature">
+            <h3> Gateway Support</h3>
+            <ul>
+                <li><strong>Africa's Talking</strong> - Full integration with AT API</li>
+                <li><strong>Custom API</strong> - Connect to any SMS gateway</li>
+                <li>Configure multiple gateways</li>
+                <li>Set default gateway for campaigns</li>
+                <li>Test gateway connections</li>
+            </ul>
+        </div>
+
+        <div class="feature">
+            <h3> Analytics & Reporting</h3>
+            <ul>
+                <li>Real-time campaign statistics</li>
+                <li>Success rate calculations</li>
+                <li>Failed message tracking with error details</li>
+                <li>Delivery confirmation timestamps</li>
+                <li>Export reports for analysis</li>
+            </ul>
+        </div>
+
+        <h2> Technical Specifications</h2>
+        
+        <ul>
+            <li><strong>Odoo Version:</strong> 19.0+</li>
+            <li><strong>License:</strong> LGPL-3</li>
+            <li><strong>Author:</strong> Francis Martin Nyabuto Agata</li>
+            <li><strong>Category:</strong> Marketing</li>
+            <li><strong>Dependencies:</strong> base, mail, contacts, hr</li>
+        </ul>
+
+        <h2> Installation</h2>
+        
+        <ol>
+            <li>Download or clone the module to your Odoo addons directory</li>
+            <li>Update the app list in Odoo</li>
+            <li>Install the "ICT Ops Odoo SMS" module</li>
+            <li>Configure your SMS gateway in Configuration menu</li>
+            <li>Start creating SMS campaigns!</li>
+        </ol>
+
+        <h2> Configuration</h2>
+        
+        <div class="feature">
+            <h3>Setting up Africa's Talking</h3>
+            <ol>
+                <li>Go to SMS Marketing -> Configuration -> SMS Gateways</li>
+                <li>Create a new gateway configuration</li>
+                <li>Select "Africa's Talking" as gateway type</li>
+                <li>Enter your API Key and Username</li>
+                <li>Set your Sender ID</li>
+                <li>Click "Test Connection" to verify</li>
+            </ol>
+        </div>
+
+        <h2> Usage Examples</h2>
+        
+        <div class="feature">
+            <h3>Creating Your First Campaign</h3>
+            <ol>
+                <li>Navigate to SMS Marketing -> Campaigns -> SMS Campaigns</li>
+                <li>Click "Create" to start a new campaign</li>
+                <li>Write your message in the Message tab</li>
+                <li>Import recipients using CSV or add manually</li>
+                <li>Click "Send Now" or "Schedule" for later delivery</li>
+            </ol>
+        </div>
+
+        <h2> CSV Import Format</h2>
+        
+        <p>Your CSV file should have the following columns:</p>
+        <pre>name,phone_number
+                John ,+254712345678
+                Jane ,+254723456789
+                Bob ,+254734567890
+        </pre>
+
+        <div class="cta">
+            <h2> Intended for use within Strathmore University </h2>
+            <p style="font-size: 16px; margin: 20px 0;">
+                Install ICT Ops Odoo SMS today and start engaging your students through 
+                powerful, targeted SMS campaigns!
+            </p>
+        </div>
+
+        <h2> Support & Contact</h2>
+        
+        <ul>
+            <li><strong>Issues:</strong> Report bugs on GitHub Issues</li>
+            <li><strong>Email:</strong> #############</li>
+            <li><strong>Website:</strong> SupeFrankie@github.com</li>
+        </ul>
+
+        <h2> License</h2>
+        
+        <p>
+            This module is licensed under LGPL-3. See the LICENSE file for more details.
+        </p>
+
+        <hr>
+        
+        <p style="text-align: center; color: #999; font-size: 14px;">
+            © 2025 Strathmore University. All rights reserved.<br>
+        </p>
+    </div>
+</body>
+</html>

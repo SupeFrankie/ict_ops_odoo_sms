@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- SMS Manager Group -->
+        <record id="group_sms_manager" model="res.groups">
+            <field name="name">SMS Manager</field>
+            <field name="category_id" ref="base.module_category_marketing"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- SMS User Group -->
+        <record id="group_sms_user" model="res.groups">
+            <field name="name">SMS User</field>
+            <field name="category_id" ref="base.module_category_marketing"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+    </data>
+</odoo>

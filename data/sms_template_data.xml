@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Birthday Template for Students/Staff -->
+        <record id="sms_template_birthday_partner" model="sms.template">
+            <field name="name">Birthday Wishes</field>
+            <field name="template_type">birthday</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Happy Birthday ${object.name}! 🎉 Wishing you a wonderful day filled with joy and success. Best wishes from strathmore university!</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Exam Reminder Template -->
+        <record id="sms_template_exam_reminder" model="sms.template">
+            <field name="name">Exam Reminder</field>
+            <field name="template_type">appointment</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Dear ${object.name}, reminder: Your exam for ${object.program.name} ${object.exam_name} is scheduled for ${object.exam_date} at ${object.exam_time}. Please check the timetable and arrive 30 minutes before the start of the exam. Good luck!</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Fee Payment Reminder Template -->
+        <record id="sms_template_fee_reminder" model="sms.template">
+            <field name="name">Fee Payment Reminder</field>
+            <field name="template_type">payment</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Dear ${object.name}, this is a reminder about your pending tuition fee payment. Due on ${object.invoice_date_due}. Kindly visit the finance office. Thank you!</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Welcome New Student Template -->
+        <record id="sms_template_welcome_student" model="sms.template">
+            <field name="name">Welcome New Student</field>
+            <field name="template_type">welcome</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Welcome ${object.name}! We're excited to have you join strathmore university. Check your student portal for orientation details. Best wishes for your journey!</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Class Cancellation Template -->
+        <record id="sms_template_class_cancellation" model="sms.template">
+            <field name="name">Class Cancellation Notice</field>
+            <field name="template_type">custom</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Hi ${object.name}, your class today ${object.program.name} has been cancelled for today. Please liase with your lecturer for rescheduling information. Stay updated!</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Result Publication Template -->
+        <record id="sms_template_results" model="sms.template">
+            <field name="name">Exam Results Published</field>
+            <field name="template_type">custom</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Dear ${object.name}, your exam results are now available on the student portal. Please log in to view your grades. Best regards, Strathmore University!</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Library Book Due Template -->
+        <record id="sms_template_library_due" model="sms.template">
+            <field name="name">Library Book Due</field>
+            <field name="template_type">followup</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Hi ${object.name}, your library book ${object.book_title} is due on ${object.due_date}. Please return or renew it to avoid a late fee of ${object.fine_amount}. Visit the library or renew online.</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Registration Reminder Template -->
+        <record id="sms_template_registration" model="sms.template">
+            <field name="name">Course Registration Reminder</field>
+            <field name="template_type">custom</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Dear ${object.name}, course registration starts from ${object.start} to ${object.stop}. Please complete your registration by ${object.stop} to ensure a smooth semester. Contact your admin for help.</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Event Notification Template -->
+        <record id="sms_template_event" model="sms.template">
+            <field name="name">SU Event</field>
+            <field name="template_type">promotion</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Dear ${object.name}! Kindly join us for an exciting event ${object.description} on ${object.create_date} . From ${object.start} to ${object.stop} at ${object.location} Check your email or notice board for details. We hope to see you there!</field>
+            <field name="active">True</field>
+        </record>
+
+
+        <!-- Attendance Warning Template -->
+        <record id="sms_template_attendance" model="sms.template">
+            <field name="name">Attendance Warning</field>
+            <field name="template_type">followup</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Dear ${object.name}, your attendance for unit\'s ${object.program.name} is below the required percentage ${object.attendance_percentage}. Please improve your attendance to remain eligible for exams. Contact your admin  for further details.</field>
+            <field name="active">True</field>
+        </record>
+
+        <!-- Parent Meeting Template -->
+        <record id="sms_template_parent_meeting" model="sms.template">
+            <field name="name">Parent-Teacher Meeting</field>
+            <field name="template_type">appointment</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Dear Parent of ${object.name} of Student ID ${object.name}, you're invited to our parent-teacher meeting. Please check your email ${object.email} for date, time, and venue. Your presence is highly appreciated!</field>
+            <field name="active">True</field>
+        </record>
+
+
+        <!-- Graduation Ceremony Template -->
+        <record id="sms_template_graduation" model="sms.template">
+            <field name="name">Graduation Ceremony</field>
+            <field name="template_type">custom</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="body">Congratulations ${object.title.name}! You're invited to the graduation ceremony of ${object.name}. Starting from ${object.start} to ${object.stop}. We're proud of you!</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

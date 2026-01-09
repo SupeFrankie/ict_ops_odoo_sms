@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Scheduled Action: Send Pending SMS Messages -->
+        <record id="ir_cron_send_pending_sms" model="ir.cron">
+            <field name="name">SMS: Send Pending Messages</field>
+            <field name="model_id" ref="model_sms_message"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_send_pending_sms()</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="doall">False</field>
+            <field name="priority">5</field>
+        </record>
+
+        <!-- Scheduled Action: Birthday SMS Reminder -->
+        <record id="ir_cron_birthday_sms" model="ir.cron">
+            <field name="name">SMS: Send Birthday Wishes</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_send_birthday_sms()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=8, minute=0, second=0)"/>
+            <field name="numbercall">-1</field>
+            <field name="active">False</field>
+            <field name="doall">False</field>
+            <field name="priority">10</field>
+        </record>
+
+        <!-- Scheduled Action: Fee Payment Reminders -->
+        <record id="ir_cron_fee_reminder_sms" model="ir.cron">
+            <field name="name">SMS: Fee Payment Reminders</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_send_fee_reminder_sms()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=10, minute=0, second=0)"/>
+            <field name="numbercall">-1</field>
+            <field name="active">False</field>
+            <field name="doall">False</field>
+            <field name="priority">10</field>
+        </record>
+
+        <!-- Scheduled Action: Exam Reminders (Day Before) -->
+        <record id="ir_cron_exam_reminder_sms" model="ir.cron">
+            <field name="name">SMS: Exam Reminders</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_send_exam_reminder_sms()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=18, minute=0, second=0)"/>
+            <field name="numbercall">-1</field>
+            <field name="active">False</field>
+            <field name="doall">False</field>
+            <field name="priority">10</field>
+        </record>
+
+        <!-- Scheduled Action: Library Book Due Reminders -->
+        <record id="ir_cron_library_due_sms" model="ir.cron">
+            <field name="name">SMS: Library Book Due Reminders</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_send_library_due_sms()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(hour=9, minute=0, second=0)"/>
+            <field name="numbercall">-1</field>
+            <field name="active">False</field>
+            <field name="doall">False</field>
+            <field name="priority">10</field>
+        </record>
+
+        <!-- Scheduled Action: Attendance Warnings -->
+        <record id="ir_cron_attendance_warning_sms" model="ir.cron">
+            <field name="name">SMS: Attendance Warnings</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_send_attendance_warning_sms()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(weeks=1)).replace(hour=14, minute=0, second=0)"/>
+            <field name="numbercall">-1</field>
+            <field name="active">False</field>
+            <field name="doall">False</field>
+            <field name="priority">15</field>
+        </record>
+
+        <!-- Scheduled Action: Clean Old SMS Messages -->
+        <record id="ir_cron_clean_old_sms" model="ir.cron">
+            <field name="name">SMS: Clean Old Messages</field>
+            <field name="model_id" ref="model_sms_message"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_clean_old_sms()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=30)).replace(hour=2, minute=0, second=0)"/>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="doall">False</field>
+            <field name="priority">20</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Main SMS Menu -->
+        <menuitem id="menu_sms_root"
+                  name="SMS"
+                  web_icon="sms,static/description/icon.png"
+                  sequence="50"/>
+
+        <!-- SMS Management Submenu -->
+        <menuitem id="menu_sms_main"
+                  name="SMS"
+                  parent="menu_sms_root"
+                  sequence="10"/>
+
+        <!-- Configuration Submenu -->
+        <menuitem id="menu_sms_configuration"
+                  name="Configuration"
+                  parent="menu_sms_root"
+                  sequence="100"/>
+    </data>
+</odoo>

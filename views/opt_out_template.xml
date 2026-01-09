@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Opt-Out Success/Error Page -->
+        <template id="sms_opt_out_page" name="SMS Opt-Out Page">
+            <t t-call="web.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_text_block pt96 pb96" style="background: linear-gradient(135deg, #003DA5 0%, #8B0000 100%); min-height: 100vh;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 offset-lg-2">
+                                    <div class="card shadow-lg" style="border-radius: 15px; border: 3px solid #FFD700;">
+                                        <div class="card-body p-5">
+                                            <t t-if="status == 'success'">
+                                                <div class="text-center mb-4">
+                                                    <i class="fa fa-check-circle" style="font-size: 80px; color: #28a745;"></i>
+                                                </div>
+                                                <h1 class="text-center mb-4" style="color: #003DA5;">Opt-Out Successful</h1>
+                                            </t>
+                                            <t t-elif="status == 'already_opted_out'">
+                                                <div class="text-center mb-4">
+                                                    <i class="fa fa-info-circle" style="font-size: 80px; color: #FFD700;"></i>
+                                                </div>
+                                                <h1 class="text-center mb-4" style="color: #003DA5;">Already Opted Out</h1>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="text-center mb-4">
+                                                    <i class="fa fa-exclamation-triangle" style="font-size: 80px; color: #8B0000;"></i>
+                                                </div>
+                                                <h1 class="text-center mb-4" style="color: #8B0000;">Error</h1>
+                                            </t>
+                                            
+                                            <div class="alert" t-attf-class="alert-#{status == 'success' and 'success' or status == 'already_opted_out' and 'info' or 'danger'}" role="alert">
+                                                <p class="mb-0" style="font-size: 18px;"><t t-esc="message"/></p>
+                                            </div>
+                                            
+                                            <div class="mt-4 p-4" style="background: #f8f9fa; border-radius: 10px; border-left: 4px solid #003DA5;">
+                                                <h4 style="color: #003DA5;">What This Means:</h4>
+                                                <ul style="font-size: 16px; line-height: 1.8;">
+                                                    <li>You will no longer receive SMS messages from our campaigns</li>
+                                                    <li>Your phone number (<strong><t t-esc="phone_number"/></strong>) has been added to our opt-out list</li>
+                                                    <li>You can opt back in at any time using the link below</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="text-center mt-5">
+                                                <a t-attf-href="/sms/optin/#{phone_number}" class="btn btn-lg" style="background: #003DA5; color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-size: 18px;">
+                                                    Re-Subscribe to SMS
+                                                </a>
+                                            </div>
+                                            
+                                            <div class="text-center mt-4">
+                                                <p style="color: #666; font-size: 14px;">
+                                                    If you have any questions, please contact our support team.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- Opt-In (Re-Subscribe) Page -->
+        <template id="sms_opt_in_page" name="SMS Opt-In Page">
+            <t t-call="web.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_text_block pt96 pb96" style="background: linear-gradient(135deg, #003DA5 0%, #8B0000 100%); min-height: 100vh;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 offset-lg-2">
+                                    <div class="card shadow-lg" style="border-radius: 15px; border: 3px solid #FFD700;">
+                                        <div class="card-body p-5">
+                                            <t t-if="status == 'success'">
+                                                <div class="text-center mb-4">
+                                                    <i class="fa fa-check-circle" style="font-size: 80px; color: #28a745;"></i>
+                                                </div>
+                                                <h1 class="text-center mb-4" style="color: #003DA5;">Welcome Back!</h1>
+                                            </t>
+                                            <t t-elif="status == 'not_opted_out'">
+                                                <div class="text-center mb-4">
+                                                    <i class="fa fa-info-circle" style="font-size: 80px; color: #FFD700;"></i>
+                                                </div>
+                                                <h1 class="text-center mb-4" style="color: #003DA5;">Already Subscribed</h1>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="text-center mb-4">
+                                                    <i class="fa fa-exclamation-triangle" style="font-size: 80px; color: #8B0000;"></i>
+                                                </div>
+                                                <h1 class="text-center mb-4" style="color: #8B0000;">Error</h1>
+                                            </t>
+                                            
+                                            <div class="alert" t-attf-class="alert-#{status == 'success' and 'success' or status == 'not_opted_out' and 'info' or 'danger'}" role="alert">
+                                                <p class="mb-0" style="font-size: 18px;"><t t-esc="message"/></p>
+                                            </div>
+                                            
+                                            <t t-if="status == 'success'">
+                                                <div class="mt-4 p-4" style="background: #f8f9fa; border-radius: 10px; border-left: 4px solid #003DA5;">
+                                                    <h4 style="color: #003DA5;">What This Means:</h4>
+                                                    <ul style="font-size: 16px; line-height: 1.8;">
+                                                        <li>You will now receive SMS messages from our campaigns</li>
+                                                        <li>Your phone number (<strong><t t-esc="phone_number"/></strong>) has been removed from the opt-out list</li>
+                                                        <li>You can opt out again at any time if you change your mind</li>
+                                                    </ul>
+                                                </div>
+                                            </t>
+                                            
+                                            <div class="text-center mt-5">
+                                                <a t-attf-href="/sms/optout/#{phone_number}" class="btn btn-lg" style="background: #8B0000; color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-size: 18px;">
+                                                    Opt-Out Again
+                                                </a>
+                                            </div>
+                                            
+                                            <div class="text-center mt-4">
+                                                <p style="color: #666; font-size: 14px;">
+                                                    Thank you for staying connected with us!
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- Status Check Page -->
+        <template id="sms_status_check_page" name="SMS Status Check Page">
+            <t t-call="web.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_text_block pt96 pb96" style="background: linear-gradient(135deg, #003DA5 0%, #8B0000 100%); min-height: 100vh;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-6 offset-lg-3">
+                                    <div class="card shadow-lg" style="border-radius: 15px; border: 3px solid #FFD700;">
+                                        <div class="card-body p-5">
+                                            <div class="text-center mb-4">
+                                                <i class="fa fa-search" style="font-size: 80px; color: #003DA5;"></i>
+                                            </div>
+                                            <h1 class="text-center mb-4" style="color: #003DA5;">Check SMS Subscription Status</h1>
+                                            
+                                            <p class="text-center mb-4" style="font-size: 16px; color: #666;">
+                                                Enter your phone number to check if you're subscribed to our SMS campaigns
+                                            </p>
+                                            
+                                            <form id="statusCheckForm" class="mt-4">
+                                                <div class="form-group">
+                                                    <label for="phone_number" style="font-weight: bold; color: #003DA5;">Phone Number</label>
+                                                    <input type="text" class="form-control form-control-lg" id="phone_number" name="phone_number" 
+                                                           placeholder="+254712345678" required="" 
+                                                           style="border: 2px solid #003DA5; border-radius: 10px; padding: 15px;"/>
+                                                    <small class="form-text text-muted">Include country code (e.g., +254 for Kenya)</small>
+                                                </div>
+                                                
+                                                <div class="text-center mt-4">
+                                                    <button type="submit" class="btn btn-lg btn-block" 
+                                                            style="background: linear-gradient(135deg, #003DA5 0%, #8B0000 100%); color: white; padding: 15px; border-radius: 30px; border: 2px solid #FFD700; font-size: 18px;">
+                                                        Check Status
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            
+                                            <div id="statusResult" class="mt-4" style="display: none;">
+                                                <div class="alert" id="resultAlert" role="alert"></div>
+                                                <div id="actionButtons" class="text-center mt-3"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                
+                <script type="text/javascript">
+                    document.getElementById('statusCheckForm').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        var phoneNumber = document.getElementById('phone_number').value.trim();
+                        var resultDiv = document.getElementById('statusResult');
+                        var alertDiv = document.getElementById('resultAlert');
+                        var buttonsDiv = document.getElementById('actionButtons');
+                        
+                        // Show loading
+                        alertDiv.className = 'alert alert-info';
+                        alertDiv.innerHTML = 'Checking status...';
+                        resultDiv.style.display = 'block';
+                        buttonsDiv.innerHTML = '';
+                        
+                        // Make JSON RPC call
+                        fetch('/sms/check_status', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {
+                                    phone_number: phoneNumber
+                                }
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.result.success) {
+                                if (data.result.is_opted_out) {
+                                    alertDiv.className = 'alert alert-warning';
+                                    alertDiv.innerHTML = '<strong>Status:</strong> You are currently OPTED OUT from SMS campaigns.<br/>' +
+                                                       (data.result.reason ? '<small>Reason: ' + data.result.reason + '</small>' : '');
+                                    buttonsDiv.innerHTML = '<a href="/sms/optin/' + phoneNumber + '" class="btn btn-success btn-lg" style="border-radius: 30px; padding: 12px 40px;">Re-Subscribe</a>';
+                                } else {
+                                    alertDiv.className = 'alert alert-success';
+                                    alertDiv.innerHTML = '<strong>Status:</strong> You are SUBSCRIBED to SMS campaigns.';
+                                    buttonsDiv.innerHTML = '<a href="/sms/optout/' + phoneNumber + '" class="btn btn-danger btn-lg" style="border-radius: 30px; padding: 12px 40px;">Opt-Out</a>';
+                                }
+                            } else {
+                                alertDiv.className = 'alert alert-danger';
+                                alertDiv.innerHTML = 'Error: ' + data.result.error;
+                            }
+                        })
+                        .catch(error => {
+                            alertDiv.className = 'alert alert-danger';
+                            alertDiv.innerHTML = 'An error occurred while checking status.';
+                        });
+                    });
+                </script>
+            </t>
+        </template>
+    </data>
+</odoo>

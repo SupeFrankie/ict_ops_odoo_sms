@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- list View -->
+        <record id="view_sms_blacklist_list" model="ir.ui.view">
+            <field name="name">sms.blacklist.list</field>
+            <field name="model">sms.blacklist</field>
+            <field name="arch" type="xml">
+                <list string="SMS Blacklist">
+                    <field name="phone_number"/>
+                    <field name="reason"/>
+                    <field name="create_date"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_sms_blacklist_form" model="ir.ui.view">
+            <field name="name">sms.blacklist.form</field>
+            <field name="model">sms.blacklist</field>
+            <field name="arch" type="xml">
+                <form string="SMS Blacklist">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="phone_number"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="reason"/>
+                                <field name="create_date" readonly="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_sms_blacklist_search" model="ir.ui.view">
+            <field name="name">sms.blacklist.search</field>
+            <field name="model">sms.blacklist</field>
+            <field name="arch" type="xml">
+                <search string="Search SMS Blacklist">
+                    <field name="phone_number"/>
+                    <field name="reason"/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Reason" name="group_reason" context="{'group_by': 'reason'}"/>
+                        <filter string="Create Date" name="group_create_date" context="{'group_by': 'create_date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_sms_blacklist" model="ir.actions.act_window">
+            <field name="name">SMS Blacklist</field>
+            <field name="res_model">sms.blacklist</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a blacklist entry
+                </p>
+                <p>
+                    Add phone numbers to the blacklist to prevent sending SMS to them.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_sms_blacklist"
+                  name="Blacklist"
+                  parent="menu_sms_marketing_config"
+                  action="action_sms_blacklist"
+                  sequence="30"/>
+    </data>
+</odoo>
