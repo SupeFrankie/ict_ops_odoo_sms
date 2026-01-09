@@ -171,8 +171,7 @@
         <!-- Main Menu -->
         <menuitem id="menu_sms_marketing_root"
                   name="SMS Marketing"
-                  sequence="50"
-                  web_icon="ict_ops_odoo_sms,static/description/icon.png"/>
+                  sequence="50"/>
 
         <menuitem id="menu_sms_marketing_campaigns"
                   name="Campaigns"

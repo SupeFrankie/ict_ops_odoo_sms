@@ -26,7 +26,7 @@ class SMSContact(models.Model):
     Each record is one person you can send messages to.
     """
     
-    _name = 'ict_ops.sms.contact'
+    _name = 'sms.contact'
     _description = 'SMS Contact'
     _order = 'name'
     _rec_name = 'name'  # What shows when you reference this record
@@ -74,13 +74,13 @@ class SMSContact(models.Model):
     
     # Additional categorization
     club_ids = fields.Many2many(
-        'ict_ops.sms.club',  # We'll create this model
+        'sms.club',  
         string='Clubs',
         help='Clubs this contact belongs to'
     )
     
     tag_ids = fields.Many2many(
-        'ict_ops.sms.tag',  # Custom tags for grouping
+        'sms.tag',  # Custom tags for grouping
         string='Tags',
         help='Tags for flexible categorization (e.g., Year 1, Finalists, etc.)'
     )
@@ -113,7 +113,7 @@ class SMSContact(models.Model):
     
     # Mailing lists this contact belongs to
     mailing_list_ids = fields.Many2many(
-        'ict_ops.sms.mailing_list',
+        'sms.mailing_list',
         string='Mailing Lists',
         help='Lists this contact is subscribed to'
     )
@@ -159,7 +159,7 @@ class SMSContact(models.Model):
         This is a computed field - it automatically updates
         when the blacklist changes.
         """
-        Blacklist = self.env['ict_ops.sms.blacklist']
+        Blacklist = self.env['sms.blacklist']
         for contact in self:
             # Clean the mobile number for comparison
             clean_mobile = self._clean_phone(contact.mobile)
@@ -175,7 +175,7 @@ class SMSContact(models.Model):
         We search the sms.message model for messages
         sent to this contact's number.
         """
-        Message = self.env['ict_ops.sms.message']
+        Message = self.env['sms.message']
         for contact in self:
             contact.messages_sent = Message.search_count([
                 ('mobile', '=', contact.mobile)
@@ -282,7 +282,7 @@ class SMSContact(models.Model):
     def action_add_to_blacklist(self):
         """Add this contact to the blacklist."""
         self.ensure_one()
-        Blacklist = self.env['ict_ops.sms.blacklist']
+        Blacklist = self.env['sms.blacklist']
         
         # Check if already blacklisted
         if self.blacklisted:
@@ -343,7 +343,7 @@ class SMSContact(models.Model):
 # Supporting models for categorization
 class SMSClub(models.Model):
     """Clubs for categorizing contacts."""
-    _name = 'ict_ops.sms.club'
+    _name = 'sms.club'
     _description = 'SMS Club'
     _order = 'name'
     
@@ -351,7 +351,7 @@ class SMSClub(models.Model):
     code = fields.Char(string='Code', help='Short code for the club')
     description = fields.Text(string='Description')
     member_ids = fields.Many2many(
-        'ict_ops.sms.contact',
+        'sms.contact',
         string='Members',
         help='Club members'
     )
@@ -369,7 +369,7 @@ class SMSClub(models.Model):
 
 class SMSTag(models.Model):
     """Tags for flexible contact categorization."""
-    _name = 'ict_ops.sms.tag'
+    _name = 'sms.tag'
     _description = 'SMS Tag'
     _order = 'name'
     

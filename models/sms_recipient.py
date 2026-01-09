@@ -19,6 +19,7 @@ class SmsRecipient(models.Model):
     )
 
     name = fields.Char(required=True)
+    phone_number = fields.Char(string='Phone Number', required=True, index=True)
     phone = fields.Char(required=True, index=True)
     email = fields.Char()
 

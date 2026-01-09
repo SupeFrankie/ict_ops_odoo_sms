@@ -19,7 +19,7 @@ class SmsTemplate(models.Model):
     ], string='Template Type', required=True, default='custom')
     
     model_id = fields.Many2one('ir.model', string='Applies to', required=True,
-                               domain=[('transient', '=', False)])
+                               domain=[('transient', '=', False)], ondelete='cascade')
     model = fields.Char(related='model_id.model', string='Model', readonly=True, store=True)
     body = fields.Text(string='Message Body', required=True,
                       help='You can use ${object.field_name} to insert dynamic content')

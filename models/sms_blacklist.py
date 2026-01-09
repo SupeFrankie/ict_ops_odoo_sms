@@ -7,6 +7,7 @@ class SMSBlacklist(models.Model):
     _description = 'SMS Blacklist - Opt-out Management'
     _order = 'create_date desc'
     
+    phone_number = fields.Char(string='Phone Number', required=True, index=True)
     phone = fields.Char('Phone Number', required=True, index=True)
     name = fields.Char('Name')
     reason = fields.Selection([

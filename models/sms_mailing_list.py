@@ -38,7 +38,7 @@ class SMSMailingList(models.Model):
     "Computer Science Dept", "Football Club", etc.
     """
     
-    _name = 'ict_ops.sms.mailing_list'
+    _name = 'sms.mailing_list'
     _description = 'SMS Mailing List'
     _order = 'name'
     _rec_name = 'name'
@@ -73,7 +73,7 @@ class SMSMailingList(models.Model):
     
     # Contacts in this list
     contact_ids = fields.Many2many(
-        'ict_ops.sms.contact',
+        'sms.contact',
         'sms_list_contact_rel',  # Relation table name
         'list_id',               # This model's foreign key
         'contact_id',            # Other model's foreign key
@@ -157,7 +157,7 @@ class SMSMailingList(models.Model):
     )
     
     club_id = fields.Many2one(
-        'ict_ops.sms.club',
+        'sms.club',
         string='Club',
         help='Link to club if this is a club list'
     )
@@ -283,8 +283,8 @@ class SMSMailingList(models.Model):
                     'Found columns: %s'
                 ) % ', '.join(reader.fieldnames))
             
-            Contact = self.env['ict_ops.sms.contact']
-            imported_contacts = self.env['ict_ops.sms.contact']
+            Contact = self.env['sms.contact']
+            imported_contacts = self.env['sms.contact']
             
             row_num = 1  # Start at 1 (header is row 0)
             for row in reader:
@@ -400,8 +400,8 @@ class SMSMailingList(models.Model):
             docx_file = io.BytesIO(file_data)
             doc = Document(docx_file)
             
-            Contact = self.env['ict_ops.sms.contact']
-            imported_contacts = self.env['ict_ops.sms.contact']
+            Contact = self.env['sms.contact']
+            imported_contacts = self.env['sms.contact']
             
             # Method 1: Try tables first
             if doc.tables:
@@ -514,8 +514,8 @@ class SMSMailingList(models.Model):
             # Try to decode as plain text (won't work well for binary .doc)
             text = file_data.decode('utf-8', errors='ignore')
             
-            Contact = self.env['ict_ops.sms.contact']
-            imported_contacts = self.env['ict_ops.sms.contact']
+            Contact = self.env['sms.contact']
+            imported_contacts = self.env['sms.contact']
             
             # Split into lines
             lines = text.split('\n')
@@ -619,7 +619,7 @@ class SMSMailingList(models.Model):
         """Add all students from contacts to this list."""
         self.ensure_one()
         
-        students = self.env['ict_ops.sms.contact'].search([
+        students = self.env['sms.contact'].search([
             ('contact_type', '=', 'student'),
             ('opt_in', '=', True)
         ])
@@ -642,7 +642,7 @@ class SMSMailingList(models.Model):
         if not self.department_id:
             raise UserError(_('No department linked to this list!'))
         
-        dept_contacts = self.env['ict_ops.sms.contact'].search([
+        dept_contacts = self.env['sms.contact'].search([
             ('department_id', '=', self.department_id.id),
             ('opt_in', '=', True)
         ])

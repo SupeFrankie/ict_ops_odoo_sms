@@ -28,7 +28,7 @@ class SMSMessage(models.Model):
     Can be sent to one or multiple recipients.
     """
     
-    _name = 'ict_ops.sms.message'
+    _name = 'sms.message'
     _description = 'SMS Message'
     _order = 'create_date desc'
     _rec_name = 'subject'
@@ -69,13 +69,13 @@ class SMSMessage(models.Model):
        help='How recipients were selected')
     
     contact_ids = fields.Many2many(
-        'ict_ops.sms.contact',
+        'sms.contact',
         string='Contacts',
         help='Individual contacts to send to'
     )
     
     mailing_list_id = fields.Many2one(
-        'ict_ops.sms.mailing_list',
+        'sms.mailing_list',
         string='Mailing List',
         help='Send to all contacts in this list'
     )
@@ -87,7 +87,7 @@ class SMSMessage(models.Model):
     )
     
     club_id = fields.Many2one(
-        'ict_ops.sms.club',
+        'sms.club',
         string='Club',
         help='Send to all club members'
     )
@@ -172,14 +172,14 @@ class SMSMessage(models.Model):
     
     # Related records
     detail_ids = fields.One2many(
-        'ict_ops.sms.message.detail',
+        'sms.message.detail',
         'message_id',
         string='Send Details',
         help='Per-recipient send status'
     )
     
     template_id = fields.Many2one(
-        'ict_ops.sms.template',
+        'sms.template',
         string='Template Used',
         help='Template this message was based on'
     )
@@ -236,7 +236,7 @@ class SMSMessage(models.Model):
             
             # Add department contacts
             if message.department_id:
-                dept_contacts = self.env['ict_ops.sms.contact'].search([
+                dept_contacts = self.env['sms.contact'].search([
                     ('department_id', '=', message.department_id.id),
                     ('opt_in', '=', True)
                 ])
@@ -326,7 +326,7 @@ class SMSMessage(models.Model):
         """
         recipients = []
         seen_numbers = set()
-        Blacklist = self.env['ict_ops.sms.blacklist']
+        Blacklist = self.env['sms.blacklist']
         
         def add_contact(contact):
             """Helper to add a contact if valid."""
@@ -366,7 +366,7 @@ class SMSMessage(models.Model):
                 add_contact(contact)
         
         if self.department_id:
-            dept_contacts = self.env['ict_ops.sms.contact'].search([
+            dept_contacts = self.env['sms.contact'].search([
                 ('department_id', '=', self.department_id.id),
                 ('opt_in', '=', True)
             ])
@@ -404,17 +404,17 @@ class SMSMessage(models.Model):
         """
         # Get API credentials from system parameters
         ICP = self.env['ir.config_parameter'].sudo()
-        username = ICP.get_param('ict_ops.at_username', '')
-        api_key = ICP.get_param('ict_ops.at_api_key', '')
-        sender_id = ICP.get_param('ict_ops.at_sender_id', 'STRATHU')
-        use_sandbox = ICP.get_param('ict_ops.at_use_sandbox', 'True') == 'True'
+        username = ICP.get_param('at_username', '')
+        api_key = ICP.get_param('at_api_key', '')
+        sender_id = ICP.get_param('at_sender_id', 'STRATHU')
+        use_sandbox = ICP.get_param('at_use_sandbox', 'True') == 'True'
         
         if not username or not api_key:
             raise UserError(_(
                 'Africa\'s Talking credentials not configured!\n'
                 'Go to Settings > Technical > System Parameters and set:\n'
-                '- ict_ops.at_username\n'
-                '- ict_ops.at_api_key'
+                '- at_username\n'
+                '- at_api_key'
             ))
         
         # API endpoint
@@ -437,7 +437,7 @@ class SMSMessage(models.Model):
         
         # Send in batches (Africa's Talking limit is 1000 per request)
         batch_size = 1000
-        MessageDetail = self.env['ict_ops.sms.message.detail']
+        MessageDetail = self.env['sms.message.detail']
         
         for i in range(0, len(recipients), batch_size):
             batch = recipients[i:i+batch_size]
@@ -534,19 +534,19 @@ class SMSMessage(models.Model):
 class SMSMessageDetail(models.Model):
     """Per-recipient send status."""
     
-    _name = 'ict_ops.sms.message.detail'
+    _name = 'sms.message.detail'
     _description = 'SMS Message Detail'
     _order = 'create_date desc'
     
     message_id = fields.Many2one(
-        'ict_ops.sms.message',
+        'sms.message',
         string='Message',
         required=True,
         ondelete='cascade'
     )
     
     contact_id = fields.Many2one(
-        'ict_ops.sms.contact',
+        'sms.contact',
         string='Contact'
     )
     

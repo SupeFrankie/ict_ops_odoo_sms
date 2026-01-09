@@ -38,7 +38,7 @@ class SmsOptOutController(http.Controller):
             
             if existing:
                 return self._render_response(
-                    'ict_ops_odoo_sms.sms_opt_out_page',
+                    'sms_opt_out_page',
                     f"Phone number {phone_number} is already opted out.",
                     "already_opted_out",
                     phone_number
@@ -52,7 +52,7 @@ class SmsOptOutController(http.Controller):
             _logger.info(f"Phone number {phone_number} opted out via web link")
             
             return self._render_response(
-                'ict_ops_odoo_sms.sms_opt_out_page',
+                'sms_opt_out_page',
                 f"Phone number {phone_number} has been successfully opted out from SMS campaigns.",
                 "success",
                 phone_number
@@ -61,7 +61,7 @@ class SmsOptOutController(http.Controller):
         except ValueError as e:
             _logger.warning(f"Invalid phone number: {str(e)}")
             return self._render_response(
-                'ict_ops_odoo_sms.sms_opt_out_page',
+                'sms_opt_out_page',
                 "Invalid phone number format.",
                 "invalid",
                 phone_number
@@ -69,7 +69,7 @@ class SmsOptOutController(http.Controller):
         except Exception as e:
             _logger.error(f"Error processing opt-out for {phone_number}: {str(e)}")
             return self._render_response(
-                'ict_ops_odoo_sms.sms_opt_out_page',
+                'sms_opt_out_page',
                 'An error occurred while processing your request. Please try again later.',
                 'error',
                 phone_number
@@ -90,14 +90,14 @@ class SmsOptOutController(http.Controller):
                 blacklist_entry.write({'active': False})
                 _logger.info(f"Phone number {phone_number} opted back in via web link")
                 return self._render_response(
-                    'ict_ops_odoo_sms.sms_opt_in_page',
+                    'sms_opt_in_page',
                     f"Phone number {phone_number} has been successfully re-subscribed to SMS campaigns.",
                     "success",
                     phone_number
                 )
             
             return self._render_response(
-                'ict_ops_odoo_sms.sms_opt_in_page',
+                'sms_opt_in_page',
                 f"Phone number {phone_number} is not currently opted out.",
                 "not_opted_out",
                 phone_number
@@ -106,7 +106,7 @@ class SmsOptOutController(http.Controller):
         except ValueError as e:
             _logger.warning(f"Invalid phone number: {str(e)}")
             return self._render_response(
-                'ict_ops_odoo_sms.sms_opt_in_page',
+                'sms_opt_in_page',
                 "Invalid phone number format.",
                 "invalid",
                 phone_number
@@ -114,7 +114,7 @@ class SmsOptOutController(http.Controller):
         except Exception as e:
             _logger.error(f"Error processing opt-in for {phone_number}: {str(e)}")
             return self._render_response(
-                'ict_ops_odoo_sms.sms_opt_in_page',
+                'sms_opt_in_page',
                 'An error occurred while processing your request. Please try again later.',
                 'error',
                 phone_number
@@ -123,7 +123,7 @@ class SmsOptOutController(http.Controller):
     @http.route('/sms/status', type='http', auth='public', website=True)
     def check_opt_status(self):
         """Page to check opt-out status"""
-        return request.render('ict_ops_odoo_sms.sms_status_check_page')
+        return request.render('sms_status_check_page')
     
     @http.route('/sms/check_status', type='json', auth='public', csrf=False)
     def check_status_json(self, phone_number):

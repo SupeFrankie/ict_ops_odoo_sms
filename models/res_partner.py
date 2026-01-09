@@ -28,7 +28,7 @@ class ResPartner(models.Model):
     
     # Link to SMS contact
     sms_contact_id = fields.Many2one(
-        'ict_ops.sms.contact',
+        'sms.contact',
         string='SMS Contact',
         help='Linked SMS contact record'
     )
@@ -75,7 +75,7 @@ class ResPartner(models.Model):
     @api.depends('mobile')
     def _compute_sms_blacklisted(self):
         """Check if mobile is blacklisted."""
-        Blacklist = self.env['ict_ops.sms.blacklist']
+        Blacklist = self.env['sms.blacklist']
         for partner in self:
             if partner.mobile:
                 partner.sms_blacklisted = Blacklist.is_blacklisted(partner.mobile)
@@ -84,7 +84,7 @@ class ResPartner(models.Model):
     
     def _compute_sms_count(self):
         """Count SMS sent to this partner."""
-        Message = self.env['ict_ops.sms.message.detail']
+        Message = self.env['sms.message.detail']
         for partner in self:
             if partner.mobile:
                 messages = Message.search([
@@ -119,7 +119,7 @@ class ResPartner(models.Model):
         return {
             'name': _('Send SMS'),
             'type': 'ir.actions.act_window',
-            'res_model': 'ict_ops.sms.compose.wizard',
+            'res_model': 'sms.compose.wizard',
             'view_mode': 'form',
             'target': 'new',
             'context': {
@@ -152,7 +152,7 @@ class ResPartner(models.Model):
                 'type': 'success',
                 'next': {
                     'type': 'ir.actions.act_window',
-                    'res_model': 'ict_ops.sms.contact',
+                    'res_model': 'sms.contact',
                     'res_id': self.sms_contact_id.id,
                     'view_mode': 'form',
                 }
@@ -169,7 +169,7 @@ class ResPartner(models.Model):
         return {
             'name': _('SMS Contact'),
             'type': 'ir.actions.act_window',
-            'res_model': 'ict_ops.sms.contact',
+            'res_model': 'sms.contact',
             'res_id': self.sms_contact_id.id,
             'view_mode': 'form',
             'target': 'current',
@@ -185,7 +185,7 @@ class ResPartner(models.Model):
         return {
             'name': _('SMS History'),
             'type': 'ir.actions.act_window',
-            'res_model': 'ict_ops.sms.message.detail',
+            'res_model': 'sms.message.detail',
             'view_mode': 'tree,form',
             'domain': [('mobile', '=', self.mobile)],
             'context': {'default_mobile': self.mobile}
@@ -240,7 +240,7 @@ class ResPartner(models.Model):
             raise UserError(_('This contact is already blacklisted!'))
         
         # Add to blacklist
-        Blacklist = self.env['ict_ops.sms.blacklist']
+        Blacklist = self.env['sms.blacklist']
         Blacklist.create({
             'mobile': self.mobile,
             'reason': 'manual',
@@ -271,7 +271,7 @@ class ResPartner(models.Model):
         """
         self.ensure_one()
         
-        Contact = self.env['ict_ops.sms.contact']
+        Contact = self.env['sms.contact']
         
         # Prepare contact data
         contact_data = {
@@ -398,7 +398,7 @@ class ResPartner(models.Model):
         return {
             'name': _('Send SMS to %d Contacts') % len(sms_contact_ids),
             'type': 'ir.actions.act_window',
-            'res_model': 'ict_ops.sms.compose.wizard',
+            'res_model': 'sms.compose.wizard',
             'view_mode': 'form',
             'target': 'new',
             'context': {
