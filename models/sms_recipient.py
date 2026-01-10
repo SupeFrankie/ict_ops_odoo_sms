@@ -9,7 +9,6 @@ class SmsRecipient(models.Model):
     _description = 'SMS Recipient'
     _order = 'create_date desc'
 
-    # core
     campaign_id = fields.Many2one(
         'sms.campaign',
         string='Campaign',
@@ -20,10 +19,8 @@ class SmsRecipient(models.Model):
 
     name = fields.Char(required=True)
     phone_number = fields.Char(string='Phone Number', required=True, index=True)
-    phone = fields.Char(required=True, index=True)
     email = fields.Char()
 
-    # identifiers
     admission_number = fields.Char(index=True)
     staff_id = fields.Char(index=True)
 
@@ -37,7 +34,6 @@ class SmsRecipient(models.Model):
         index=True
     )
 
-    # message tracking
     status = fields.Selection(
         [
             ('pending', 'Pending'),
@@ -57,7 +53,6 @@ class SmsRecipient(models.Model):
     gateway_message_id = fields.Char(index=True)
     retry_count = fields.Integer(default=0)
 
-    # cost tracking
     cost = fields.Monetary(
         currency_field='currency_id',
         help='SMS cost returned by gateway'
@@ -68,21 +63,18 @@ class SmsRecipient(models.Model):
         default=lambda self: self.env.company.currency_id
     )
 
-    # metadata section
-    department = fields.Char(help='Department name (legacy-compatible)')
-    club = fields.Char(help='Club name (legacy-compatible)')
+    department = fields.Char(help='Department name')
+    club = fields.Char(help='Club name')
     year_of_study = fields.Char()
 
-    # constraints
     _sql_constraints = [
         (
             'unique_phone_campaign',
-            'unique(phone, campaign_id)',
+            'unique(phone_number, campaign_id)',
             'This phone number already exists in this campaign.'
         )
     ]
 
-    # phone normalization
     @api.model
     def normalize_phone(self, phone):
         if not phone:
@@ -99,7 +91,7 @@ class SmsRecipient(models.Model):
 
         raise ValidationError(f'Invalid phone number: {phone}')
 
-    @api.constrains('phone')
+    @api.constrains('phone_number')
     def _check_phone(self):
         for rec in self:
-            rec.phone = self.normalize_phone(rec.phone)
+            rec.phone_number = self.normalize_phone(rec.phone_number)

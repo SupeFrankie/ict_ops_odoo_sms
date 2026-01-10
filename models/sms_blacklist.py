@@ -8,7 +8,6 @@ class SMSBlacklist(models.Model):
     _order = 'create_date desc'
     
     phone_number = fields.Char(string='Phone Number', required=True, index=True)
-    phone = fields.Char('Phone Number', required=True, index=True)
     name = fields.Char('Name')
     reason = fields.Selection([
         ('user_request', 'User Opt-out Request'),
@@ -22,23 +21,19 @@ class SMSBlacklist(models.Model):
     active = fields.Boolean(default=True)
     
     _sql_constraints = [
-        ('phone_unique', 'UNIQUE(phone)', 'This phone number is already blacklisted!')
+        ('phone_unique', 'UNIQUE(phone_number)', 'This phone number is already blacklisted!')
     ]
     
     @api.model
     def add_to_blacklist(self, phone, reason='user_request', notes=''):
-        """Add phone to blacklist"""
-        # Normalize phone number
         clean_phone = self._normalize_phone(phone)
         
-        # Check if already exists
-        existing = self.search([('phone', '=', clean_phone)])
+        existing = self.search([('phone_number', '=', clean_phone)])
         if existing:
             return {'success': False, 'message': 'Already blacklisted'}
         
-        # Create blacklist entry
         self.create({
-            'phone': clean_phone,
+            'phone_number': clean_phone,
             'reason': reason,
             'notes': notes,
         })
@@ -47,10 +42,9 @@ class SMSBlacklist(models.Model):
     
     @api.model
     def remove_from_blacklist(self, phone):
-        """Remove phone from blacklist (opt-in)"""
         clean_phone = self._normalize_phone(phone)
         
-        blacklisted = self.search([('phone', '=', clean_phone)])
+        blacklisted = self.search([('phone_number', '=', clean_phone)])
         if blacklisted:
             blacklisted.unlink()
             return {'success': True, 'message': 'Number removed from blacklist'}
@@ -59,22 +53,18 @@ class SMSBlacklist(models.Model):
     
     @api.model
     def is_blacklisted(self, phone):
-        """Check if phone is blacklisted"""
         clean_phone = self._normalize_phone(phone)
-        return bool(self.search([('phone', '=', clean_phone)], limit=1))
+        return bool(self.search([('phone_number', '=', clean_phone)], limit=1))
     
     def _normalize_phone(self, phone):
-        """Normalize phone number format"""
         if not phone:
             return ''
         
-        # Remove all non-digit characters except +
         clean = re.sub(r'[^\d+]', '', phone)
         
-        # Ensure it starts with +
         if not clean.startswith('+'):
             if clean.startswith('0'):
-                clean = '+254' + clean[1:]  # Kenya code
+                clean = '+254' + clean[1:]
             elif len(clean) == 9:
                 clean = '+254' + clean
         

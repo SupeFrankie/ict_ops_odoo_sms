@@ -6,11 +6,11 @@
             <field name="name">sms.recipient.list</field>
             <field name="model">sms.recipient</field>
             <field name="arch" type="xml">
-                <list string="SMS Recipients" decoration-success="state=='sent'" decoration-danger="state=='failed'" decoration-muted="state=='pending'">
+                <list string="SMS Recipients" decoration-success="status=='sent'" decoration-danger="status=='failed'" decoration-muted="status=='pending'">
                     <field name="campaign_id"/>
                     <field name="name"/>
                     <field name="phone_number"/>
-                    <field name="state"/>
+                    <field name="status"/>
                     <field name="sent_date"/>
                     <field name="error_message"/>
                 </list>
@@ -24,7 +24,7 @@
             <field name="arch" type="xml">
                 <form string="SMS Recipient">
                     <header>
-                        <field name="state" widget="statusbar" statusbar_visible="pending,sent,failed"/>
+                        <field name="status" widget="statusbar" statusbar_visible="pending,sent,failed"/>
                     </header>
                     <sheet>
                         <group>
@@ -34,9 +34,9 @@
                                 <field name="phone_number"/>
                             </group>
                             <group>
-                                <field name="state"/>
+                                <field name="status"/>
                                 <field name="sent_date" readonly="1"/>
-                                <field name="error_message" readonly="1" invisible="state != 'failed'"/>
+                                <field name="error_message" readonly="1" invisible="status != 'failed'"/>
                             </group>
                         </group>
                     </sheet>
@@ -53,14 +53,14 @@
                     <field name="name"/>
                     <field name="phone_number"/>
                     <field name="campaign_id"/>
-                    <filter string="Pending" name="pending" domain="[('state', '=', 'pending')]"/>
-                    <filter string="Sent" name="sent" domain="[('state', '=', 'sent')]"/>
-                    <filter string="Failed" name="failed" domain="[('state', '=', 'failed')]"/>
+                    <filter string="Pending" name="pending" domain="[('status', '=', 'pending')]"/>
+                    <filter string="Sent" name="sent" domain="[('status', '=', 'sent')]"/>
+                    <filter string="Failed" name="failed" domain="[('status', '=', 'failed')]"/>
                     <separator/>
                     <filter string="Sent Date" name="sent_date" date="sent_date"/>
                     <group expand="0" string="Group By">
                         <filter string="Campaign" name="group_campaign" context="{'group_by': 'campaign_id'}"/>
-                        <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="status" name="group_status" context="{'group_by': 'status'}"/>
                         <filter string="Sent Date" name="group_sent_date" context="{'group_by': 'sent_date'}"/>
                     </group>
                 </search>
