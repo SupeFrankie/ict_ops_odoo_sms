@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- list View -->
         <record id="view_sms_campaign_list" model="ir.ui.view">
             <field name="name">sms.campaign.list</field>
             <field name="model">sms.campaign</field>
@@ -18,7 +17,6 @@
             </field>
         </record>
 
-        <!-- Form View -->
         <record id="view_sms_campaign_form" model="ir.ui.view">
             <field name="name">sms.campaign.form</field>
             <field name="model">sms.campaign</field>
@@ -94,7 +92,6 @@
             </field>
         </record>
 
-        <!-- Search View -->
         <record id="view_sms_campaign_search" model="ir.ui.view">
             <field name="name">sms.campaign.search</field>
             <field name="model">sms.campaign</field>
@@ -118,7 +115,6 @@
             </field>
         </record>
 
-        <!-- Kanban View -->
         <record id="view_sms_campaign_kanban" model="ir.ui.view">
             <field name="name">sms.campaign.kanban</field>
             <field name="model">sms.campaign</field>
@@ -152,7 +148,6 @@
             </field>
         </record>
 
-        <!-- Action -->
         <record id="action_sms_campaign" model="ir.actions.act_window">
             <field name="name">SMS Campaigns</field>
             <field name="res_model">sms.campaign</field>
@@ -168,22 +163,10 @@
             </field>
         </record>
 
-        <!-- Main Menu -->
-        <menuitem id="menu_sms_marketing_campaigns"
-                  name="Campaigns"
-                  parent="menu_sms_marketing_root"
-                  sequence="10"/>
-
         <menuitem id="menu_sms_campaigns"
                   name="SMS Campaigns"
                   parent="menu_sms_marketing_campaigns"
                   action="action_sms_campaign"
                   sequence="10"/>
-
-        <!-- Configuration Menu -->
-        <menuitem id="menu_sms_marketing_config"
-                  name="Configuration"
-                  parent="menu_sms_marketing_root"
-                  sequence="100"/>
     </data>
 </odoo>

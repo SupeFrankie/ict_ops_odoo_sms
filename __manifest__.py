@@ -34,7 +34,7 @@
         
         #Data Files
         'data/sms_template_data.xml',
-        'data/ir_cron.xml',
+        #'data/ir_cron.xml',
         
         #Menu Structure
         'views/menu_views.xml',
