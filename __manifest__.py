@@ -27,16 +27,27 @@
                 ],
     
     'data': [
+        
+        #Security
         'security/security_groups.xml',
         'security/ir.model.access.csv',
+        
+        #Data Files
         'data/sms_template_data.xml',
+        'data/ir_cron.xml',
+        
+        #Menu Structure
         'views/menu_views.xml',
+        
+        #views
         'views/sms_template_views.xml',
         'views/sms_campaign_views.xml',
         'views/sms_recipient_views.xml',
         'views/sms_blacklist_views.xml',
         'views/sms_gateway_views.xml',
         'views/opt_out_templates.xml',
+        
+        #Wizards
         'wizard/sms_composer_views.xml',
         'wizard/import_recipients_wizard.xml',
     ],

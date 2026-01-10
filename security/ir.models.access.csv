@@ -13,12 +13,14 @@ access_sms_template_manager,sms.template.manager,model_sms_template,group_sms_ma
 access_sms_template_user,sms.template.user,model_sms_template,group_sms_user,1,1,1,0
 access_sms_club_manager,sms.club.manager,model_sms_club,group_sms_manager,1,1,1,1
 access_sms_club_user,sms.club.user,model_sms_club,group_sms_user,1,1,1,0
-access_sms_tag_all,sms.tag.all,model_sms_tag,,1,1,1,0
+access_sms_tag_all,sms.tag.all,model_sms_tag,base.group_user,1,1,1,0
 access_sms_campaign_manager,sms.campaign.manager,model_sms_campaign,group_sms_manager,1,1,1,1
 access_sms_campaign_user,sms.campaign.user,model_sms_campaign,group_sms_user,1,1,1,0
 access_sms_recipient_manager,sms.recipient.manager,model_sms_recipient,group_sms_manager,1,1,1,1
 access_sms_recipient_user,sms.recipient.user,model_sms_recipient,group_sms_user,1,1,1,0
 access_sms_gateway_manager,sms.gateway.manager,model_sms_gateway_configuration,group_sms_manager,1,1,1,1
 access_sms_gateway_user,sms.gateway.user,model_sms_gateway_configuration,group_sms_user,1,0,0,0
-access_import_recipients_all,import.recipients.all,model_import_sms_recipients,,1,1,1,1
-access_sms_composer_all,sms.composer.all,model_sms_composer,,1,1,1,1
+access_import_recipients_user,import.recipients.user,model_import_sms_recipients,group_sms_user,1,1,1,1
+access_import_recipients_manager,import.recipients.manager,model_import_sms_recipients,group_sms_manager,1,1,1,1
+access_sms_composer_user,sms.composer.user,model_sms_composer,group_sms_user,1,1,1,1
+access_sms_composer_manager,sms.composer.manager,model_sms_composer,group_sms_manager,1,1,1,1

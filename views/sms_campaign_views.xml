@@ -169,10 +169,6 @@
         </record>
 
         <!-- Main Menu -->
-        <menuitem id="menu_sms_marketing_root"
-                  name="SMS Marketing"
-                  sequence="50"/>
-
         <menuitem id="menu_sms_marketing_campaigns"
                   name="Campaigns"
                   parent="menu_sms_marketing_root"

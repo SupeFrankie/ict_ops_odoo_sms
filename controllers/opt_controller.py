@@ -19,7 +19,9 @@ class SmsOptOutController(http.Controller):
     
     def _render_response(self, template, message, status, phone_number):
         """Helper method to render responses"""
-        return request.render(template, {
+        # FIX: Add module prefix to template name
+        full_template = f'sms_marketing.{template}'
+        return request.render(full_template, {
             'message': message,
             'status': status,
             'phone_number': phone_number
@@ -46,7 +48,8 @@ class SmsOptOutController(http.Controller):
             
             request.env['sms.blacklist'].sudo().create({
                 'phone_number': phone_number,
-                'reason': 'User opted out via web link',
+                'reason': 'user_request',  # FIX: Use valid selection value
+                'notes': 'User opted out via web link',
                 'active': True
             })
             _logger.info(f"Phone number {phone_number} opted out via web link")
@@ -64,7 +67,7 @@ class SmsOptOutController(http.Controller):
                 'sms_opt_out_page',
                 "Invalid phone number format.",
                 "invalid",
-                phone_number
+                phone_number if phone_number else ''
             )
         except Exception as e:
             _logger.error(f"Error processing opt-out for {phone_number}: {str(e)}")
@@ -72,7 +75,7 @@ class SmsOptOutController(http.Controller):
                 'sms_opt_out_page',
                 'An error occurred while processing your request. Please try again later.',
                 'error',
-                phone_number
+                phone_number if phone_number else ''
             )
     
     @http.route('/sms/optin/<string:phone_number>', type='http', auth='public', website=True, csrf=False)
@@ -109,7 +112,7 @@ class SmsOptOutController(http.Controller):
                 'sms_opt_in_page',
                 "Invalid phone number format.",
                 "invalid",
-                phone_number
+                phone_number if phone_number else ''
             )
         except Exception as e:
             _logger.error(f"Error processing opt-in for {phone_number}: {str(e)}")
@@ -117,13 +120,13 @@ class SmsOptOutController(http.Controller):
                 'sms_opt_in_page',
                 'An error occurred while processing your request. Please try again later.',
                 'error',
-                phone_number
+                phone_number if phone_number else ''
             )
     
     @http.route('/sms/status', type='http', auth='public', website=True)
     def check_opt_status(self):
         """Page to check opt-out status"""
-        return request.render('sms_status_check_page')
+        return request.render('sms_marketing.sms_status_check_page')
     
     @http.route('/sms/check_status', type='json', auth='public', csrf=False)
     def check_status_json(self, phone_number):
