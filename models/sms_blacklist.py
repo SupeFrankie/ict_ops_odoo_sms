@@ -14,7 +14,8 @@ class SMSBlacklist(models.Model):
         ('bounced', 'Number Not Reachable'),
         ('complaint', 'Spam Complaint'),
         ('admin', 'Administrator Action'),
-    ], string='Blacklist Reason', default='user_request')
+        ('manual', 'Manual Entry'),
+    ], string='Blacklist Reason', default='manual')
     
     notes = fields.Text('Notes')
     blacklist_date = fields.Datetime('Blacklisted On', default=fields.Datetime.now)
@@ -25,7 +26,7 @@ class SMSBlacklist(models.Model):
     ]
     
     @api.model
-    def add_to_blacklist(self, phone, reason='user_request', notes=''):
+    def add_to_blacklist(self, phone, reason='manual', notes=''):
         clean_phone = self._normalize_phone(phone)
         
         existing = self.search([('phone_number', '=', clean_phone)])
@@ -54,7 +55,7 @@ class SMSBlacklist(models.Model):
     @api.model
     def is_blacklisted(self, phone):
         clean_phone = self._normalize_phone(phone)
-        return bool(self.search([('phone_number', '=', clean_phone)], limit=1))
+        return bool(self.search([('phone_number', '=', clean_phone), ('active', '=', True)], limit=1))
     
     def _normalize_phone(self, phone):
         if not phone:

@@ -1,16 +1,6 @@
-#model/sms_mailing_list
+#model/sms_mailing_list.py
 """
-SMS Mailing List Model
-======================
-
-Manages contact lists with import from CSV, DOC, and DOCX files.
-
-Features:
-- Create lists manually
-- Import from CSV files
-- Import from DOC/DOCX files
-- Bulk add/remove contacts
-- Statistics tracking
+SMS Mailing List Model with CSV/DOCX Import Support
 """
 
 from odoo import models, fields, api, _
@@ -23,20 +13,18 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+# Try to import python-docx for DOCX support
 try:
-    from doc import Document
+    from docx import Document
+    DOCX_AVAILABLE = True
 except ImportError:
-    _logger.warning('python-docx not installed. DOCX import will not work.')
+    _logger.warning('python-docx not installed. DOCX import will not work. Install with: pip install python-docx')
     Document = None
+    DOCX_AVAILABLE = False
 
 
 class SMSMailingList(models.Model):
-    """
-    Mailing lists for grouping contacts.
-    
-    Think of this as your contact groups - like "Year 1 Students",
-    "Computer Science Dept", "Football Club", etc.
-    """
+    """Mailing lists for grouping contacts."""
     
     _name = 'sms.mailing_list'
     _description = 'SMS Mailing List'
@@ -74,9 +62,9 @@ class SMSMailingList(models.Model):
     # Contacts in this list
     contact_ids = fields.Many2many(
         'sms.contact',
-        'sms_list_contact_rel',  # Relation table name
-        'list_id',               # This model's foreign key
-        'contact_id',            # Other model's foreign key
+        'sms_list_contact_rel',
+        'list_id',
+        'contact_id',
         string='Contacts',
         help='Contacts in this mailing list'
     )
@@ -177,15 +165,7 @@ class SMSMailingList(models.Model):
     
     # Import methods
     def action_import_contacts(self):
-        """
-        Import contacts from uploaded file.
-        
-        Supports:
-        - CSV files (.csv)
-        - Word documents (.doc, .docx)
-        
-        Triggered when user uploads file and clicks import.
-        """
+        """Import contacts from uploaded file."""
         self.ensure_one()
         
         if not self.import_file:
@@ -203,9 +183,13 @@ class SMSMailingList(models.Model):
         if filename_lower.endswith('.csv'):
             result = self._import_from_csv(file_data)
         elif filename_lower.endswith('.docx'):
+            if not DOCX_AVAILABLE:
+                raise UserError(_(
+                    'DOCX import not available!\n'
+                    'Please install python-docx: pip install python-docx'
+                ))
             result = self._import_from_docx(file_data)
         elif filename_lower.endswith('.doc'):
-            # Old .doc format - treat as plain text attempt
             result = self._import_from_doc(file_data)
         else:
             raise UserError(_(
@@ -218,11 +202,11 @@ class SMSMailingList(models.Model):
             'last_import_date': fields.Datetime.now(),
             'last_import_count': result['success_count'],
             'last_import_errors': result['errors'],
-            'import_file': False,  # Clear file after import
+            'import_file': False,
             'import_filename': False,
         })
         
-        # Show result to user
+        # Show result
         message = _(
             'Import Complete!\n\n'
             'Successfully imported: %d contacts\n'
@@ -249,15 +233,7 @@ class SMSMailingList(models.Model):
         }
     
     def _import_from_csv(self, file_data):
-        """
-        Import contacts from CSV file.
-        
-        Expected CSV format:
-        name,mobile,student_id,department,email
-        John Doe,+254712345678,STU001,Computer Science,john@example.com
-        
-        Minimum required: name, mobile
-        """
+        """Import contacts from CSV file."""
         result = {
             'success_count': 0,
             'error_count': 0,
@@ -266,14 +242,10 @@ class SMSMailingList(models.Model):
         }
         
         try:
-            # Decode file content
-            csv_text = file_data.decode('utf-8-sig')  # utf-8-sig handles BOM
+            csv_text = file_data.decode('utf-8-sig')
             csv_file = io.StringIO(csv_text)
-            
-            # Read CSV
             reader = csv.DictReader(csv_file)
             
-            # Check if required columns exist
             if not reader.fieldnames:
                 raise UserError(_('CSV file is empty or invalid!'))
             
@@ -286,32 +258,24 @@ class SMSMailingList(models.Model):
             Contact = self.env['sms.contact']
             imported_contacts = self.env['sms.contact']
             
-            row_num = 1  # Start at 1 (header is row 0)
+            row_num = 1
             for row in reader:
                 row_num += 1
                 
                 try:
-                    # Get required fields
                     name = (row.get('name') or '').strip()
                     mobile = (row.get('mobile') or '').strip()
                     
                     if not name or not mobile:
                         result['error_count'] += 1
-                        result['errors'] += _(
-                            'Row %d: Missing name or mobile\n'
-                        ) % row_num
+                        result['errors'] += _('Row %d: Missing name or mobile\n') % row_num
                         continue
                     
-                    # Clean mobile number
                     mobile = Contact._clean_phone(mobile)
                     
-                    # Check if contact already exists
-                    existing = Contact.search([
-                        ('mobile', '=', mobile)
-                    ], limit=1)
+                    existing = Contact.search([('mobile', '=', mobile)], limit=1)
                     
                     if existing:
-                        # Add to list if not already there
                         if existing not in self.contact_ids:
                             self.contact_ids = [(4, existing.id)]
                             result['success_count'] += 1
@@ -319,13 +283,11 @@ class SMSMailingList(models.Model):
                             result['duplicate_count'] += 1
                         continue
                     
-                    # Prepare contact data
                     contact_data = {
                         'name': name,
                         'mobile': mobile,
                     }
                     
-                    # Optional fields
                     if row.get('student_id'):
                         contact_data['student_id'] = row['student_id'].strip()
                     
@@ -337,7 +299,6 @@ class SMSMailingList(models.Model):
                         if contact_type in ['student', 'staff', 'club', 'external']:
                             contact_data['contact_type'] = contact_type
                     
-                    # Department lookup
                     if row.get('department'):
                         dept_name = row['department'].strip()
                         department = self.env['hr.department'].search([
@@ -346,19 +307,15 @@ class SMSMailingList(models.Model):
                         if department:
                             contact_data['department_id'] = department.id
                     
-                    # Create contact
                     contact = Contact.create(contact_data)
                     imported_contacts |= contact
                     result['success_count'] += 1
                     
                 except Exception as e:
                     result['error_count'] += 1
-                    result['errors'] += _(
-                        'Row %d: %s\n'
-                    ) % (row_num, str(e))
+                    result['errors'] += _('Row %d: %s\n') % (row_num, str(e))
                     _logger.error('Error importing row %d: %s', row_num, str(e))
             
-            # Add all imported contacts to this list
             if imported_contacts:
                 self.contact_ids = [(4, contact.id) for contact in imported_contacts]
         
@@ -368,26 +325,12 @@ class SMSMailingList(models.Model):
                 'Please save your CSV file as UTF-8 encoding.'
             ))
         except Exception as e:
-            raise UserError(_(
-                'Error reading CSV file: %s'
-            ) % str(e))
+            raise UserError(_('Error reading CSV file: %s') % str(e))
         
         return result
     
     def _import_from_docx(self, file_data):
-        """
-        Import contacts from DOCX file.
-        
-        Expected format:
-        - Each line: Name, Mobile, Student ID (comma or tab separated)
-        - Or: Table with columns: Name, Mobile, Student ID
-        """
-        if Document is None:
-            raise UserError(_(
-                'DOCX import not available!\n'
-                'Please install python-docx: pip install python-docx'
-            ))
-        
+        """Import contacts from DOCX file."""
         result = {
             'success_count': 0,
             'error_count': 0,
@@ -396,28 +339,24 @@ class SMSMailingList(models.Model):
         }
         
         try:
-            # Load DOCX
             docx_file = io.BytesIO(file_data)
             doc = Document(docx_file)
             
             Contact = self.env['sms.contact']
             imported_contacts = self.env['sms.contact']
             
-            # Method 1: Try tables first
+            # Try tables first
             if doc.tables:
                 for table in doc.tables:
-                    # Assume first row is header
                     headers = [cell.text.strip().lower() for cell in table.rows[0].cells]
                     
-                    # Find column indices
                     name_idx = self._find_column_index(headers, ['name', 'full name', 'student name'])
                     mobile_idx = self._find_column_index(headers, ['mobile', 'phone', 'number', 'contact'])
                     student_id_idx = self._find_column_index(headers, ['student id', 'id', 'student no', 'admission'])
                     
                     if name_idx is None or mobile_idx is None:
-                        continue  # Skip this table
+                        continue
                     
-                    # Process rows (skip header)
                     for row_num, row in enumerate(table.rows[1:], start=2):
                         try:
                             cells = row.cells
@@ -428,10 +367,7 @@ class SMSMailingList(models.Model):
                             if not name or not mobile:
                                 continue
                             
-                            # Process contact
-                            contact_result = self._create_or_add_contact(
-                                Contact, name, mobile, student_id
-                            )
+                            contact_result = self._create_or_add_contact(Contact, name, mobile, student_id)
                             
                             if contact_result['action'] == 'created':
                                 imported_contacts |= contact_result['contact']
@@ -445,20 +381,18 @@ class SMSMailingList(models.Model):
                             result['error_count'] += 1
                             result['errors'] += _('Table row %d: %s\n') % (row_num, str(e))
             
-            # Method 2: Parse paragraphs (line by line)
-            if result['success_count'] == 0:  # No tables or tables were empty
+            # Try paragraphs if no tables or tables empty
+            if result['success_count'] == 0:
                 for para_num, para in enumerate(doc.paragraphs, start=1):
                     try:
                         text = para.text.strip()
                         if not text:
                             continue
                         
-                        # Try to parse: Name, Mobile, Student ID
-                        # Split by comma or tab
                         parts = re.split(r'[,\t]+', text)
                         
                         if len(parts) < 2:
-                            continue  # Need at least name and mobile
+                            continue
                         
                         name = parts[0].strip()
                         mobile = parts[1].strip()
@@ -467,10 +401,7 @@ class SMSMailingList(models.Model):
                         if not name or not mobile:
                             continue
                         
-                        # Process contact
-                        contact_result = self._create_or_add_contact(
-                            Contact, name, mobile, student_id
-                        )
+                        contact_result = self._create_or_add_contact(Contact, name, mobile, student_id)
                         
                         if contact_result['action'] == 'created':
                             imported_contacts |= contact_result['contact']
@@ -484,7 +415,6 @@ class SMSMailingList(models.Model):
                         result['error_count'] += 1
                         result['errors'] += _('Line %d: %s\n') % (para_num, str(e))
             
-            # Add all imported contacts to this list
             if imported_contacts:
                 self.contact_ids = [(4, contact.id) for contact in imported_contacts]
         
@@ -494,30 +424,19 @@ class SMSMailingList(models.Model):
         return result
     
     def _import_from_doc(self, file_data):
-        """
-        Import from old .doc format.
-        
-        Since old .doc is binary format and hard to parse,
-        we'll try to extract text as plain text and parse it.
-        
-        Note: This is best-effort. Recommend users convert to DOCX first.
-        """
+        """Import from old .doc format (best effort)."""
         result = {
             'success_count': 0,
             'error_count': 0,
             'duplicate_count': 0,
-            'errors': _('Warning: Old .doc format detected. Results may be incomplete.\n'
+            'errors': _('Warning: Old .doc format. Results may be incomplete.\n'
                        'Please convert to .docx or .csv for better results.\n\n')
         }
         
         try:
-            # Try to decode as plain text (won't work well for binary .doc)
             text = file_data.decode('utf-8', errors='ignore')
-            
             Contact = self.env['sms.contact']
             imported_contacts = self.env['sms.contact']
-            
-            # Split into lines
             lines = text.split('\n')
             
             for line_num, line in enumerate(lines, start=1):
@@ -526,7 +445,6 @@ class SMSMailingList(models.Model):
                     if not line:
                         continue
                     
-                    # Try to parse: Name, Mobile, Student ID
                     parts = re.split(r'[,\t]+', line)
                     
                     if len(parts) < 2:
@@ -536,17 +454,13 @@ class SMSMailingList(models.Model):
                     mobile = parts[1].strip()
                     student_id = parts[2].strip() if len(parts) > 2 else ''
                     
-                    # Validate mobile number pattern
                     if not re.search(r'[+\d]', mobile):
-                        continue  # Doesn't look like a phone number
+                        continue
                     
                     if not name or not mobile:
                         continue
                     
-                    # Process contact
-                    contact_result = self._create_or_add_contact(
-                        Contact, name, mobile, student_id
-                    )
+                    contact_result = self._create_or_add_contact(Contact, name, mobile, student_id)
                     
                     if contact_result['action'] == 'created':
                         imported_contacts |= contact_result['contact']
@@ -560,7 +474,6 @@ class SMSMailingList(models.Model):
                     result['error_count'] += 1
                     result['errors'] += _('Line %d: %s\n') % (line_num, str(e))
             
-            # Add imported contacts
             if imported_contacts:
                 self.contact_ids = [(4, contact.id) for contact in imported_contacts]
             
@@ -584,27 +497,17 @@ class SMSMailingList(models.Model):
         return None
     
     def _create_or_add_contact(self, Contact, name, mobile, student_id=''):
-        """
-        Create new contact or add existing to list.
-        
-        Returns:
-            dict: {'action': 'created'|'added'|'duplicate', 'contact': recordset}
-        """
-        # Clean mobile
+        """Create new contact or add existing to list."""
         mobile = Contact._clean_phone(mobile)
-        
-        # Check if exists
         existing = Contact.search([('mobile', '=', mobile)], limit=1)
         
         if existing:
-            # Add to list if not already there
             if existing not in self.contact_ids:
                 self.contact_ids = [(4, existing.id)]
                 return {'action': 'added', 'contact': existing}
             else:
                 return {'action': 'duplicate', 'contact': existing}
         
-        # Create new contact
         contact = Contact.create({
             'name': name,
             'mobile': mobile,
@@ -616,7 +519,7 @@ class SMSMailingList(models.Model):
     
     # Bulk operations
     def action_add_all_students(self):
-        """Add all students from contacts to this list."""
+        """Add all students to this list."""
         self.ensure_one()
         
         students = self.env['sms.contact'].search([

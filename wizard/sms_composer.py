@@ -65,6 +65,7 @@ class SmsComposer(models.TransientModel):
         # Try to get phone from record
         if res_model and res_id:
             record = self.env[res_model].browse(res_id)
+            # Try different phone field names
             phone_fields = ['mobile', 'phone', 'mobile_phone']
             for field in phone_fields:
                 if hasattr(record, field):
@@ -88,27 +89,41 @@ class SmsComposer(models.TransientModel):
         if not phone:
             raise UserError('Invalid phone number format.')
         
-        # Create SMS message record
-        sms_message = self.env['sms.message'].create({
-            'recipient_phone': phone,
-            'body': self.body,
-            'res_model': self.res_model,
-            'res_id': self.res_id,
-            'template_id': self.template_id.id if self.template_id else False,
-        })
+        # Check if blacklisted
+        if self.env['sms.blacklist'].is_blacklisted(phone):
+            raise UserError(f'Phone number {phone} is blacklisted and cannot receive SMS.')
         
-        # Send the SMS
+        # Get default gateway
+        gateway = self.env['sms.gateway.configuration'].search([
+            ('is_default', '=', True),
+            ('active', '=', True)
+        ], limit=1)
+        
+        if not gateway:
+            gateway = self.env['sms.gateway.configuration'].search([
+                ('active', '=', True)
+            ], limit=1)
+        
+        if not gateway:
+            raise UserError('No SMS gateway configured. Please configure a gateway in Settings.')
+        
+        # Send SMS via gateway
         try:
-            sms_message.action_send()
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': 'Success',
-                    'message': f'SMS sent to {self.recipient_phone}',
-                    'type': 'success',
-                    'sticky': False,
+            success, result = gateway.send_sms(phone, self.body)
+            
+            if success:
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': 'Success',
+                        'message': f'SMS sent successfully to {self.recipient_phone}',
+                        'type': 'success',
+                        'sticky': False,
+                    }
                 }
-            }
+            else:
+                raise UserError(f'Failed to send SMS: {result}')
+                
         except Exception as e:
             raise UserError(f'Failed to send SMS: {str(e)}')

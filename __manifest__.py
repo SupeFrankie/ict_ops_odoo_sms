@@ -23,7 +23,8 @@
                 'mail', 
                 'contacts', 
                 'web',
-                'hr',],
+                'hr',
+                ],
     
     'data': [
         'security/security_groups.xml',
@@ -35,6 +36,7 @@
         'views/sms_recipient_views.xml',
         'views/sms_blacklist_views.xml',
         'views/sms_gateway_views.xml',
+        'views/opt_out_templates.xml',
         'wizard/sms_composer_views.xml',
         'wizard/import_recipients_wizard.xml',
     ],

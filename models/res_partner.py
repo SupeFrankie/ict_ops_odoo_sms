@@ -12,19 +12,18 @@ This lets you:
 - Use Odoo contacts in SMS module
 """
 
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class ResPartner(models.Model):
-    """
-    Extend res.partner (Odoo's contact model).
+    """Extend res.partner (Odoo's contact model)."""
     
-    This adds SMS-related fields and actions to the
-    standard Odoo contact form.
-    """
-    
-    _inherit = 'res.partner'  # Extend existing model
+    _inherit = 'res.partner'
     
     # Link to SMS contact
     sms_contact_id = fields.Many2one(
@@ -46,7 +45,7 @@ class ResPartner(models.Model):
         help='Whether this contact is on SMS blacklist'
     )
     
-    # Student/Staff info (for university context)
+    # Student/Staff info
     student_id = fields.Char(
         string='Student/Staff ID',
         help='Admission number or Staff ID'
@@ -72,13 +71,24 @@ class ResPartner(models.Model):
         help='When we last sent SMS to this contact'
     )
     
-    @api.depends('mobile')
+    def _get_mobile_number(self):
+        """Get mobile number from available fields."""
+        self.ensure_one()
+        # Try different field names in order of preference
+        for field_name in ['mobile', 'phone', 'mobile_phone']:
+            if hasattr(self, field_name):
+                value = getattr(self, field_name, None)
+                if value:
+                    return value
+        return None
+    
     def _compute_sms_blacklisted(self):
         """Check if mobile is blacklisted."""
         Blacklist = self.env['sms.blacklist']
         for partner in self:
-            if partner.mobile:
-                partner.sms_blacklisted = Blacklist.is_blacklisted(partner.mobile)
+            mobile = partner._get_mobile_number()
+            if mobile:
+                partner.sms_blacklisted = Blacklist.is_blacklisted(mobile)
             else:
                 partner.sms_blacklisted = False
     
@@ -86,9 +96,10 @@ class ResPartner(models.Model):
         """Count SMS sent to this partner."""
         Message = self.env['sms.message.detail']
         for partner in self:
-            if partner.mobile:
+            mobile = partner._get_mobile_number()
+            if mobile:
                 messages = Message.search([
-                    ('mobile', '=', partner.mobile)
+                    ('mobile', '=', mobile)
                 ])
                 partner.sms_count = len(messages)
                 partner.last_sms_date = messages[0].send_date if messages else False
@@ -98,14 +109,11 @@ class ResPartner(models.Model):
     
     # Actions
     def action_send_sms(self):
-        """
-        Open SMS compose wizard for this partner.
-        
-        Button in partner form view opens wizard to send SMS.
-        """
+        """Open SMS compose wizard for this partner."""
         self.ensure_one()
         
-        if not self.mobile:
+        mobile = self._get_mobile_number()
+        if not mobile:
             raise UserError(_('This contact has no mobile number!'))
         
         if self.sms_blacklisted:
@@ -129,17 +137,14 @@ class ResPartner(models.Model):
         }
     
     def action_create_sms_contact(self):
-        """
-        Create SMS contact from this partner.
-        
-        Copies information from partner to SMS contact.
-        """
+        """Create SMS contact from this partner."""
         self.ensure_one()
         
         if self.sms_contact_id:
             raise UserError(_('This partner already has an SMS contact!'))
         
-        if not self.mobile:
+        mobile = self._get_mobile_number()
+        if not mobile:
             raise UserError(_('This partner has no mobile number!'))
         
         self._create_sms_contact()
@@ -179,7 +184,8 @@ class ResPartner(models.Model):
         """View SMS sent to this partner."""
         self.ensure_one()
         
-        if not self.mobile:
+        mobile = self._get_mobile_number()
+        if not mobile:
             raise UserError(_('This contact has no mobile number!'))
         
         return {
@@ -187,8 +193,8 @@ class ResPartner(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'sms.message.detail',
             'view_mode': 'tree,form',
-            'domain': [('mobile', '=', self.mobile)],
-            'context': {'default_mobile': self.mobile}
+            'domain': [('mobile', '=', mobile)],
+            'context': {'default_mobile': mobile}
         }
     
     def action_opt_in_sms(self):
@@ -197,7 +203,6 @@ class ResPartner(models.Model):
         
         self.write({'sms_opt_in': True})
         
-        # Update SMS contact if exists
         if self.sms_contact_id:
             self.sms_contact_id.action_opt_in()
         
@@ -216,7 +221,6 @@ class ResPartner(models.Model):
         
         self.write({'sms_opt_in': False})
         
-        # Update SMS contact if exists
         if self.sms_contact_id:
             self.sms_contact_id.action_opt_out()
         
@@ -233,24 +237,21 @@ class ResPartner(models.Model):
         """Add this partner to SMS blacklist."""
         self.ensure_one()
         
-        if not self.mobile:
+        mobile = self._get_mobile_number()
+        if not mobile:
             raise UserError(_('This contact has no mobile number!'))
         
         if self.sms_blacklisted:
             raise UserError(_('This contact is already blacklisted!'))
         
-        # Add to blacklist
         Blacklist = self.env['sms.blacklist']
         Blacklist.create({
-            'mobile': self.mobile,
-            'reason': 'manual',
-            'reason_notes': _('Added from partner: %s') % self.name,
+            'phone_number': mobile,
+            'reason': 'admin',
+            'notes': _('Added from partner: %s') % self.name,
         })
         
-        # Update computed field
         self._compute_sms_blacklisted()
-        
-        # Opt out
         self.write({'sms_opt_in': False})
         
         return {
@@ -264,68 +265,51 @@ class ResPartner(models.Model):
     
     # Helper methods
     def _create_sms_contact(self):
-        """
-        Create SMS contact from partner data.
-        
-        Internal method to sync partner -> SMS contact.
-        """
+        """Create SMS contact from partner data."""
         self.ensure_one()
+        
+        mobile = self._get_mobile_number()
+        if not mobile:
+            raise UserError(_('Cannot create SMS contact without mobile number!'))
         
         Contact = self.env['sms.contact']
         
-        # Prepare contact data
         contact_data = {
             'name': self.name,
-            'mobile': self.mobile,
+            'mobile': mobile,
             'email': self.email or False,
             'opt_in': self.sms_opt_in,
             'partner_id': self.id,
         }
         
-        # Add student/staff info if available
         if self.student_id:
             contact_data['student_id'] = self.student_id
         
         if self.contact_type:
             contact_data['contact_type'] = self.contact_type
         
-        # Link to department if partner is employee
         if self.parent_id and self.parent_id.is_company:
-            # Try to find matching department
             dept = self.env['hr.department'].search([
                 ('name', 'ilike', self.parent_id.name)
             ], limit=1)
             if dept:
                 contact_data['department_id'] = dept.id
         
-        # Create SMS contact
         sms_contact = Contact.create(contact_data)
-        
-        # Link back to partner
         self.write({'sms_contact_id': sms_contact.id})
         
         return sms_contact
     
     @api.model
     def create(self, vals):
-        """
-        Override create to auto-create SMS contact if mobile provided.
-        
-        When someone creates a new contact with mobile number,
-        optionally auto-create SMS contact.
-        """
+        """Override create to auto-create SMS contact if mobile provided."""
         partner = super(ResPartner, self).create(vals)
         
-        # Auto-create SMS contact if:
-        # 1. Has mobile number
-        # 2. Opted in for SMS
-        # 3. No SMS contact exists yet
-        if partner.mobile and partner.sms_opt_in and not partner.sms_contact_id:
+        mobile = partner._get_mobile_number()
+        if mobile and partner.sms_opt_in and not partner.sms_contact_id:
             try:
                 partner._create_sms_contact()
             except Exception as e:
-                # Don't fail partner creation if SMS contact fails
-                _logger = logging.getLogger(__name__)
                 _logger.warning(
                     'Failed to auto-create SMS contact for %s: %s',
                     partner.name, str(e)
@@ -334,23 +318,25 @@ class ResPartner(models.Model):
         return partner
     
     def write(self, vals):
-        """
-        Override write to sync changes to SMS contact.
-        
-        When partner mobile or name changes, update linked SMS contact.
-        """
+        """Override write to sync changes to SMS contact."""
         result = super(ResPartner, self).write(vals)
         
-        # Sync to SMS contact if changed
-        if any(field in vals for field in ['name', 'mobile', 'email', 'sms_opt_in', 'student_id']):
+        # Check if any SMS-relevant field changed
+        sync_fields = ['name', 'mobile', 'phone', 'mobile_phone', 'email', 
+                      'sms_opt_in', 'student_id']
+        if any(field in vals for field in sync_fields):
             for partner in self:
                 if partner.sms_contact_id:
                     sync_data = {}
                     
                     if 'name' in vals:
                         sync_data['name'] = partner.name
-                    if 'mobile' in vals:
-                        sync_data['mobile'] = partner.mobile
+                    
+                    # Sync mobile number
+                    mobile = partner._get_mobile_number()
+                    if mobile:
+                        sync_data['mobile'] = mobile
+                    
                     if 'email' in vals:
                         sync_data['email'] = partner.email or False
                     if 'sms_opt_in' in vals:
@@ -362,7 +348,6 @@ class ResPartner(models.Model):
                         try:
                             partner.sms_contact_id.write(sync_data)
                         except Exception as e:
-                            _logger = logging.getLogger(__name__)
                             _logger.warning(
                                 'Failed to sync partner %s to SMS contact: %s',
                                 partner.name, str(e)
@@ -370,18 +355,16 @@ class ResPartner(models.Model):
         
         return result
     
-    # Bulk actions for multiple partners
+    # Bulk actions
     def action_bulk_send_sms(self):
-        """
-        Send SMS to multiple selected partners.
-        
-        Available in list view: select multiple, Actions > Send SMS.
-        """
+        """Send SMS to multiple selected partners."""
         if not self:
             raise UserError(_('Please select at least one contact!'))
         
         # Filter partners with mobile
-        partners_with_mobile = self.filtered(lambda p: p.mobile and not p.sms_blacklisted)
+        partners_with_mobile = self.filtered(
+            lambda p: p._get_mobile_number() and not p.sms_blacklisted
+        )
         
         if not partners_with_mobile:
             raise UserError(_('None of the selected contacts have valid mobile numbers!'))
@@ -391,10 +374,8 @@ class ResPartner(models.Model):
             if not partner.sms_contact_id:
                 partner._create_sms_contact()
         
-        # Get all SMS contact IDs
         sms_contact_ids = partners_with_mobile.mapped('sms_contact_id').ids
         
-        # Open SMS wizard
         return {
             'name': _('Send SMS to %d Contacts') % len(sms_contact_ids),
             'type': 'ir.actions.act_window',
@@ -408,11 +389,7 @@ class ResPartner(models.Model):
         }
     
     def action_bulk_create_sms_contacts(self):
-        """
-        Create SMS contacts for all selected partners.
-        
-        Bulk action: select multiple, Actions > Create SMS Contacts.
-        """
+        """Create SMS contacts for all selected partners."""
         if not self:
             raise UserError(_('Please select at least one contact!'))
         
@@ -426,7 +403,7 @@ class ResPartner(models.Model):
                     skipped_count += 1
                     continue
                 
-                if not partner.mobile:
+                if not partner._get_mobile_number():
                     skipped_count += 1
                     continue
                 
@@ -435,7 +412,6 @@ class ResPartner(models.Model):
             
             except Exception as e:
                 error_count += 1
-                _logger = logging.getLogger(__name__)
                 _logger.error(
                     'Failed to create SMS contact for %s: %s',
                     partner.name, str(e)
@@ -453,8 +429,3 @@ class ResPartner(models.Model):
                 'sticky': True,
             }
         }
-
-
-# Add logging
-import logging
-_logger = logging.getLogger(__name__)
