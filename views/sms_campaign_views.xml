@@ -6,10 +6,10 @@
             <field name="name">sms.campaign.list</field>
             <field name="model">sms.campaign</field>
             <field name="arch" type="xml">
-                <list string="SMS Campaigns" decoration-success="state=='completed'" decoration-info="state=='draft'" decoration-warning="state=='in_progress'">
+                <list string="SMS Campaigns" decoration-success="status=='completed'" decoration-info="status=='draft'" decoration-warning="status=='in_progress'">
                     <field name="name"/>
                     <field name="schedule_date"/>
-                    <field name="state"/>
+                    <field name="status"/>
                     <field name="total_recipients"/>
                     <field name="sent_count"/>
                     <field name="failed_count"/>
@@ -26,12 +26,12 @@
                 <form string="SMS Campaign">
                     <header>
                         <button name="action_send" string="Send Now" type="object" class="oe_highlight" 
-                                invisible="state != 'draft'"/>
+                                invisible="status != 'draft'"/>
                         <button name="action_schedule" string="Schedule" type="object" class="oe_highlight" 
-                                invisible="state != 'draft'"/>
+                                invisible="status != 'draft'"/>
                         <button name="action_cancel" string="Cancel" type="object" 
-                                invisible="state not in ['draft', 'scheduled']"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,scheduled,in_progress,completed"/>
+                                invisible="status not in ['draft', 'scheduled']"/>
+                        <field name="status" widget="statusbar" statusbar_visible="draft,scheduled,in_progress,completed"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
@@ -59,10 +59,10 @@
                             </page>
                             <page string="Recipients">
                                 <field name="recipient_ids">
-                                    <list string="Recipients" editable="bottom" decoration-success="state=='sent'" decoration-danger="state=='failed'">
+                                    <list string="Recipients" editable="bottom" decoration-success="status=='sent'" decoration-danger="status=='failed'">
                                         <field name="name"/>
                                         <field name="phone_number"/>
-                                        <field name="state"/>
+                                        <field name="status"/>
                                         <field name="sent_date"/>
                                         <field name="error_message"/>
                                     </list>
@@ -102,15 +102,15 @@
                 <search string="Search SMS Campaigns">
                     <field name="name"/>
                     <field name="gateway_id"/>
-                    <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
-                    <filter string="Scheduled" name="scheduled" domain="[('state', '=', 'scheduled')]"/>
-                    <filter string="In Progress" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
-                    <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
-                    <filter string="Cancelled" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                    <filter string="Draft" name="draft" domain="[('status', '=', 'draft')]"/>
+                    <filter string="Scheduled" name="scheduled" domain="[('status', '=', 'scheduled')]"/>
+                    <filter string="In Progress" name="in_progress" domain="[('status', '=', 'in_progress')]"/>
+                    <filter string="Completed" name="completed" domain="[('status', '=', 'completed')]"/>
+                    <filter string="Cancelled" name="cancelled" domain="[('status', '=', 'cancelled')]"/>
                     <separator/>
                     <filter string="Scheduled Date" name="schedule_date" date="schedule_date"/>
                     <group expand="0" string="Group By">
-                        <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="status" name="group_status" context="{'group_by': 'status'}"/>
                         <filter string="Gateway" name="group_gateway" context="{'group_by': 'gateway_id'}"/>
                         <filter string="Schedule Date" name="group_schedule_date" context="{'group_by': 'schedule_date'}"/>
                     </group>
@@ -125,7 +125,7 @@
             <field name="arch" type="xml">
                 <kanban class="o_kanban_mobile">
                     <field name="name"/>
-                    <field name="state"/>
+                    <field name="status"/>
                     <field name="schedule_date"/>
                     <field name="total_recipients"/>
                     <field name="sent_count"/>
@@ -137,7 +137,7 @@
                                         <strong class="o_kanban_record_title"><field name="name"/></strong>
                                     </div>
                                     <span class="badge badge-pill">
-                                        <field name="state"/>
+                                        <field name="status"/>
                                     </span>
                                 </div>
                                 <div class="o_kanban_record_body">
