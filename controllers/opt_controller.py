@@ -19,8 +19,8 @@ class SmsOptOutController(http.Controller):
     
     def _render_response(self, template, message, status, phone_number):
         """Helper method to render responses"""
-        # Add module prefix to template name
-        full_template = f'ict_ops.{template}'
+        # FIX: Add module prefix to template name
+        full_template = template
         return request.render(full_template, {
             'message': message,
             'status': status,
