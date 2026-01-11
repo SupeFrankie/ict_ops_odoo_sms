@@ -175,8 +175,8 @@ class SMSCampaign(models.Model):
         if not self.gateway_id:
             raise exceptions.UserError("No SMS gateway configured!")
         
-        self.status = 'in_
-        '
+        # FIX: Changed from broken 'in_' to proper 'in_progress'
+        self.status = 'in_progress'
         
         pending_recipients = self.recipient_ids.filtered(lambda r: r.status == 'pending')
         

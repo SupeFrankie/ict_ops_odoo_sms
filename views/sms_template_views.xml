@@ -45,7 +45,7 @@
                         
                         <group string="Message Body">
                             <field name="body" widget="text" 
-                                   placeholder="Example: Hi ${object.name} ${object.student_name}, your appointment is on ${object.date}"/>
+                                   placeholder="Example: Hi ${object.name}, your appointment is on ${object.date}"/>
                         </group>
                         
                         <group string="Help - Common Variables">
@@ -105,6 +105,9 @@
                     <filter string="Appointment" name="appointment" domain="[('template_type', '=', 'appointment')]"/>
                     <filter string="Payment" name="payment" domain="[('template_type', '=', 'payment')]"/>
                     <filter string="Welcome" name="welcome" domain="[('template_type', '=', 'welcome')]"/>
+                    <filter string="Follow-up" name="followup" domain="[('template_type', '=', 'followup')]"/>
+                    <filter string="Promotion" name="promotion" domain="[('template_type', '=', 'promotion')]"/>
+                    <filter string="Custom" name="custom" domain="[('template_type', '=', 'custom')]"/>
                     <group expand="0" string="Group By">
                         <filter string="Template Type" name="group_type" context="{'group_by': 'template_type'}"/>
                         <filter string="Model" name="group_model" context="{'group_by': 'model_id'}"/>
