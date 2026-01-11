@@ -1,4 +1,3 @@
-# models/sms_recipient.py
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 import re
@@ -67,13 +66,20 @@ class SmsRecipient(models.Model):
     club = fields.Char(help='Club name')
     year_of_study = fields.Char()
 
-    _sql_constraints = [
-        (
-            'unique_phone_campaign',
-            'unique(phone_number, campaign_id)',
-            'This phone number already exists in this campaign.'
-        )
-    ]
+    @api.constrains('phone_number', 'campaign_id')
+    def _check_unique_phone_campaign(self):
+        """Ensure phone number is unique per campaign"""
+        for record in self:
+            if record.phone_number and record.campaign_id:
+                existing = self.search([
+                    ('phone_number', '=', record.phone_number),
+                    ('campaign_id', '=', record.campaign_id.id),
+                    ('id', '!=', record.id)
+                ], limit=1)
+                if existing:
+                    raise ValidationError(
+                        'This phone number already exists in this campaign.'
+                    )
 
     @api.model
     def normalize_phone(self, phone):
@@ -94,4 +100,5 @@ class SmsRecipient(models.Model):
     @api.constrains('phone_number')
     def _check_phone(self):
         for rec in self:
-            rec.phone_number = self.normalize_phone(rec.phone_number)
+            if rec.phone_number:
+                rec.phone_number = self.normalize_phone(rec.phone_number)

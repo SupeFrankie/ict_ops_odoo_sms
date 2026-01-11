@@ -89,7 +89,7 @@
             </field>
         </record>
 
-        <!-- SMS Template Search View -->
+        <!-- SMS Template Search View - FIXED -->
         <record id="view_sms_template_search" model="ir.ui.view">
             <field name="name">sms.template.search</field>
             <field name="model">sms.template</field>

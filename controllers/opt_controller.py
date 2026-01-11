@@ -1,3 +1,4 @@
+# controllers/opt_controller.py
 from odoo import http
 from odoo.http import request
 import logging
@@ -19,8 +20,7 @@ class SmsOptOutController(http.Controller):
     
     def _render_response(self, template, message, status, phone_number):
         """Helper method to render responses"""
-        # FIX: Add module prefix to template name
-        full_template = template
+        full_template = f'ict_ops.{template}'
         return request.render(full_template, {
             'message': message,
             'status': status,
@@ -48,7 +48,7 @@ class SmsOptOutController(http.Controller):
             
             request.env['sms.blacklist'].sudo().create({
                 'phone_number': phone_number,
-                'reason': 'user_request',  # FIX: Use valid selection value
+                'reason': 'user_request',
                 'notes': 'User opted out via web link',
                 'active': True
             })
@@ -128,7 +128,8 @@ class SmsOptOutController(http.Controller):
         """Page to check opt-out status"""
         return request.render('ict_ops.sms_status_check_page')
     
-    @http.route('/sms/check_status', type='json', auth='public', csrf=False)
+
+    @http.route('/sms/check_status', type='jsonrpc', auth='public', csrf=False)
     def check_status_json(self, phone_number):
         """JSON endpoint to check if a number is opted out"""
         try:

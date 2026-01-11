@@ -258,21 +258,25 @@ class SMSClub(models.Model):
     name = fields.Char(string='Club Name', required=True)
     code = fields.Char(string='Code', help='Short code for the club')
     description = fields.Text(string='Description')
+    
     member_ids = fields.Many2many(
         'sms.contact',
-        string='Members',
+        string='Club Members', 
         help='Club members'
     )
+    
     member_count = fields.Integer(
-        string='Members',
+        string='Total Members',  
         compute='_compute_member_count'
     )
+    
     active = fields.Boolean(default=True)
     
     @api.depends('member_ids')
     def _compute_member_count(self):
         for club in self:
             club.member_count = len(club.member_ids)
+
 
 
 class SMSTag(models.Model):

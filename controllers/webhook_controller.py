@@ -1,3 +1,4 @@
+#controllers/webhook_controller
 from odoo import http
 from odoo.http import request
 import json
@@ -7,7 +8,8 @@ _logger = logging.getLogger(__name__)
 
 class SmsWebhookController(http.Controller):
     
-    @http.route('/sms/webhook/status', type='json', auth='public', methods=['POST'], csrf=False)
+    
+    @http.route('/sms/webhook/status', type='jsonrpc', auth='public', methods=['POST'], csrf=False)
     def sms_status_webhook(self, **kwargs):
         """
         Webhook endpoint for SMS delivery status updates
@@ -56,7 +58,8 @@ class SmsWebhookController(http.Controller):
             _logger.error(f'Error processing SMS webhook: {str(e)}')
             return {'status': 'error', 'message': str(e)}
     
-    @http.route('/sms/webhook/incoming', type='json', auth='public', methods=['POST'], csrf=False)
+    
+    @http.route('/sms/webhook/incoming', type='jsonrpc', auth='public', methods=['POST'], csrf=False)
     def sms_incoming_webhook(self, **kwargs):
         """
         Webhook endpoint for incoming SMS messages

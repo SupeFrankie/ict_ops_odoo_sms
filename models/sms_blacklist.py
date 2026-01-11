@@ -1,5 +1,5 @@
 # models/sms_blacklist.py
-from odoo import models, fields, api, exceptions
+from odoo import models, fields, api, exceptions, _
 import re
 
 class SMSBlacklist(models.Model):
@@ -21,9 +21,20 @@ class SMSBlacklist(models.Model):
     blacklist_date = fields.Datetime('Blacklisted On', default=fields.Datetime.now)
     active = fields.Boolean(default=True)
     
-    _sql_constraints = [
-        ('phone_unique', 'UNIQUE(phone_number)', 'This phone number is already blacklisted!')
-    ]
+    
+    @api.constrains('phone_number')
+    def _check_unique_phone_number(self):
+        """Ensure phone number is unique"""
+        for record in self:
+            if record.phone_number:
+                existing = self.search([
+                    ('phone_number', '=', record.phone_number),
+                    ('id', '!=', record.id)
+                ], limit=1)
+                if existing:
+                    raise exceptions.ValidationError(
+                        _('This phone number is already blacklisted!')
+                    )
     
     @api.model
     def add_to_blacklist(self, phone, reason='manual', notes=''):
