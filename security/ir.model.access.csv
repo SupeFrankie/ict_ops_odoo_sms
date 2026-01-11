@@ -24,3 +24,4 @@ access_import_recipients_user,import.recipients.user,model_import_sms_recipients
 access_import_recipients_manager,import.recipients.manager,model_import_sms_recipients,group_sms_manager,1,1,1,1
 access_sms_composer_user,sms.composer.user,model_sms_composer,group_sms_user,1,1,1,1
 access_sms_composer_manager,sms.composer.manager,model_sms_composer,group_sms_manager,1,1,1,1
+access_sms_composer_all,sms.composer.all,model_sms_composer,base.group_user,1,1,1,1
