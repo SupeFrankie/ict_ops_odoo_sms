@@ -11,7 +11,7 @@ class SMSCampaign(models.Model):
     _order = 'create_date desc'
     
     name = fields.Char('Campaign Name', required=True, tracking=True)
-    state = fields.Selection([
+    status = fields.Selection([
         ('draft', 'Draft'),
         ('scheduled', 'Scheduled'),
         ('in_progress', 'In Progress'),
@@ -175,7 +175,8 @@ class SMSCampaign(models.Model):
         if not self.gateway_id:
             raise exceptions.UserError("No SMS gateway configured!")
         
-        self.state = 'in_progress'
+        self.status = 'in_
+        '
         
         pending_recipients = self.recipient_ids.filtered(lambda r: r.status == 'pending')
         
@@ -221,7 +222,7 @@ class SMSCampaign(models.Model):
                     })
                     self.failed_count += 1
         
-        self.state = 'completed'
+        self.status = 'completed'
         
         return {
             'type': 'ir.actions.client',
@@ -243,7 +244,7 @@ class SMSCampaign(models.Model):
         if not self.recipient_ids:
             raise exceptions.UserError("No recipients! Please prepare recipients first.")
         
-        self.state = 'scheduled'
+        self.status = 'scheduled'
         
         return {
             'type': 'ir.actions.client',
@@ -257,7 +258,7 @@ class SMSCampaign(models.Model):
     def action_cancel(self):
         """Cancel campaign"""
         self.ensure_one()
-        self.state = 'cancelled'
+        self.status = 'cancelled'
         
         return {
             'type': 'ir.actions.client',

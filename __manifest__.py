@@ -41,6 +41,9 @@
         
         #views
         'views/sms_template_views.xml',
+        'views/sms_contact_views.xml',
+        'views/sms_mailing_list_views.xml',
+        'views/sms_club_tag_views.xml',        
         'views/sms_campaign_views.xml',
         'views/sms_recipient_views.xml',
         'views/sms_blacklist_views.xml',

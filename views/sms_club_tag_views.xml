@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ==================== SMS CLUB VIEWS ==================== -->
+        
+        <!-- SMS Club list View -->
+        <record id="view_sms_club_list" model="ir.ui.view">
+            <field name="name">sms.club.list</field>
+            <field name="model">sms.club</field>
+            <field name="arch" type="xml">
+                <list string="SMS Clubs" decoration-muted="not active">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="member_count"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- SMS Club Form View -->
+        <record id="view_sms_club_form" model="ir.ui.view">
+            <field name="name">sms.club.form</field>
+            <field name="model">sms.club</field>
+            <field name="arch" type="xml">
+                <form string="SMS Club">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                            <button class="oe_stat_button" icon="fa-users" type="object">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="member_count"/>
+                                    </span>
+                                    <span class="o_stat_text">Members</span>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Club Name (e.g., Computer Science Club)" required="1"/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group>
+                                <field name="code" placeholder="e.g., CS-CLUB"/>
+                            </group>
+                            <group>
+                                <!-- Empty group for alignment -->
+                            </group>
+                        </group>
+                        
+                        <notebook>
+                            <page string="Description">
+                                <field name="description" placeholder="Club description, purpose, and activities..."/>
+                            </page>
+                            <page string="Members">
+                                <field name="member_ids">
+                                    <list decoration-danger="blacklisted" decoration-warning="not opt_in">
+                                        <field name="name"/>
+                                        <field name="mobile"/>
+                                        <field name="contact_type"/>
+                                        <field name="student_id"/>
+                                        <field name="opt_in" widget="boolean_toggle"/>
+                                        <field name="blacklisted" invisible="1"/>
+                                    </list>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <field name="name"/>
+                                                <field name="mobile"/>
+                                                <field name="contact_type"/>
+                                                <field name="student_id"/>
+                                                <field name="email"/>
+                                                <field name="opt_in"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- SMS Club Kanban View -->
+        <record id="view_sms_club_kanban" model="ir.ui.view">
+            <field name="name">sms.club.kanban</field>
+            <field name="model">sms.club</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="member_count"/>
+                    <field name="active"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <div class="o_kanban_record_subtitle">
+                                            <field name="code"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <i class="fa fa-users"/> <field name="member_count"/> members
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- SMS Club Search View -->
+        <record id="view_sms_club_search" model="ir.ui.view">
+            <field name="name">sms.club.search</field>
+            <field name="model">sms.club</field>
+            <field name="arch" type="xml">
+                <search string="Search Clubs">
+                    <field name="name"/>
+                    <field name="code"/>
+                    
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                    
+                    <group expand="0" string="Group By">
+                        <filter string="Active Status" name="group_active" context="{'group_by': 'active'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- SMS Club Action -->
+        <record id="action_sms_club" model="ir.actions.act_window">
+            <field name="name">Clubs</field>
+            <field name="res_model">sms.club</field>
+            <field name="view_mode">list,kanban,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first Club
+                </p>
+                <p>
+                    Clubs help you organize student groups and societies.
+                    Add members to send targeted SMS campaigns to specific clubs.
+                </p>
+            </field>
+        </record>
+
+        <!-- SMS Club Menu Item -->
+        <menuitem id="menu_sms_clubs"
+                  name="Clubs"
+                  parent="menu_sms_main"
+                  action="action_sms_club"
+                  sequence="40"/>
+
+        <!-- ==================== SMS TAG VIEWS ==================== -->
+        
+        <!-- SMS Tag list View -->
+        <record id="view_sms_tag_list" model="ir.ui.view">
+            <field name="name">sms.tag.list</field>
+            <field name="model">sms.tag</field>
+            <field name="arch" type="xml">
+                <list string="SMS Tags" editable="bottom" decoration-muted="not active">
+                    <field name="name" required="1"/>
+                    <field name="color" widget="color_picker"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- SMS Tag Form View -->
+        <record id="view_sms_tag_form" model="ir.ui.view">
+            <field name="name">sms.tag.form</field>
+            <field name="model">sms.tag</field>
+            <field name="arch" type="xml">
+                <form string="SMS Tag">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        
+                        <group>
+                            <field name="name" placeholder="Tag Name (e.g., Year 1, Finalists, etc.)"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- SMS Tag Kanban View -->
+        <record id="view_sms_tag_kanban" model="ir.ui.view">
+            <field name="name">sms.tag.kanban</field>
+            <field name="model">sms.tag</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" quick_create="1" quick_create_view="view_sms_tag_form">
+                    <field name="name"/>
+                    <field name="color"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click" t-attf-style="border-left: 5px solid #{record.color.raw_value or '#cccccc'};">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- SMS Tag Search View -->
+        <record id="view_sms_tag_search" model="ir.ui.view">
+            <field name="name">sms.tag.search</field>
+            <field name="model">sms.tag</field>
+            <field name="arch" type="xml">
+                <search string="Search Tags">
+                    <field name="name"/>
+                    
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- SMS Tag Action -->
+        <record id="action_sms_tag" model="ir.actions.act_window">
+            <field name="name">Tags</field>
+            <field name="res_model">sms.tag</field>
+            <field name="view_mode">list,kanban,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first Tag
+                </p>
+                <p>
+                    Tags help you categorize contacts flexibly.
+                    Examples: "Year 1", "Finalists", "Scholarship Recipients", "International Students"
+                </p>
+            </field>
+        </record>
+
+        <!-- SMS Tag Menu Item -->
+        <menuitem id="menu_sms_tags"
+                  name="Tags"
+                  parent="menu_sms_marketing_config"
+                  action="action_sms_tag"
+                  sequence="40"/>
+    </data>
+</odoo>

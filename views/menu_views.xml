@@ -12,16 +12,16 @@
                   parent="menu_sms_marketing_root"
                   sequence="10"/>
 
+        <!-- SMS Main Submenu (for templates, contacts, mailing lists, clubs, etc.) -->
+        <menuitem id="menu_sms_main"
+                  name="SMS"
+                  parent="menu_sms_marketing_root"
+                  sequence="20"/>
+
         <!-- Configuration Submenu -->
         <menuitem id="menu_sms_marketing_config"
                   name="Configuration"
                   parent="menu_sms_marketing_root"
                   sequence="100"/>
-        
-        <!-- SMS Main Submenu (for templates, contacts, etc.) -->
-        <menuitem id="menu_sms_main"
-                  name="SMS"
-                  parent="menu_sms_marketing_root"
-                  sequence="20"/>
     </data>
 </odoo>

@@ -126,7 +126,7 @@ class SmsOptOutController(http.Controller):
     @http.route('/sms/status', type='http', auth='public', website=True)
     def check_opt_status(self):
         """Page to check opt-out status"""
-        return request.render('sms_marketing.sms_status_check_page')
+        return request.render('ict_ops.sms_status_check_page')
     
     @http.route('/sms/check_status', type='json', auth='public', csrf=False)
     def check_status_json(self, phone_number):
