@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- SMS Template list View -->
+        <!-- SMS Template List View -->
         <record id="view_sms_template_list" model="ir.ui.view">
             <field name="name">sms.template.list</field>
             <field name="model">sms.template</field>
@@ -64,7 +64,7 @@
                                     <li>${object.program.name} - Program</li>
                                     <li>${object.department.name} - Department</li>
                                 </ul>
-                                <p><strong>Dates &amp; Events:</strong></p>
+                                <p><strong>Dates and Events:</strong></p>
                                 <ul>
                                     <li>${object.exam_date} - Exam date</li>
                                     <li>${object.start} - Start time</li>
@@ -89,7 +89,7 @@
             </field>
         </record>
 
-        <!-- SMS Template Search View - FIXED -->
+        <!-- SMS Template Search View -->
         <record id="view_sms_template_search" model="ir.ui.view">
             <field name="name">sms.template.search</field>
             <field name="model">sms.template</field>
