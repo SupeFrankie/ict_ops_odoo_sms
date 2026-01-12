@@ -94,27 +94,32 @@
             <field name="name">sms.template.search</field>
             <field name="model">sms.template</field>
             <field name="arch" type="xml">
-                <search string="SMS Templates">
-                    <field name="name"/>
-                    <field name="template_type"/>
-                    <field name="model_id"/>
-                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
-                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
-                    <separator/>
-                    <filter string="Birthday" name="birthday" domain="[('template_type', '=', 'birthday')]"/>
-                    <filter string="Appointment" name="appointment" domain="[('template_type', '=', 'appointment')]"/>
-                    <filter string="Payment" name="payment" domain="[('template_type', '=', 'payment')]"/>
-                    <filter string="Welcome" name="welcome" domain="[('template_type', '=', 'welcome')]"/>
-                    <filter string="Follow-up" name="followup" domain="[('template_type', '=', 'followup')]"/>
-                    <filter string="Promotion" name="promotion" domain="[('template_type', '=', 'promotion')]"/>
-                    <filter string="Custom" name="custom" domain="[('template_type', '=', 'custom')]"/>
-                    <group expand="0" string="Group By">
-                        <filter string="Template Type" name="group_type" context="{'group_by': 'template_type'}"/>
-                        <filter string="Model" name="group_model" context="{'group_by': 'model_id'}"/>
-                    </group>
-                </search>
+            <search string="SMS Templates">
+                <field name="name"/>
+                <field name="template_type"/>
+                <field name="model_id"/>
+
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+
+                <filter string="Birthday" name="birthday" domain="[('template_type', '=', 'birthday')]"/>
+                <filter string="Appointment" name="appointment" domain="[('template_type', '=', 'appointment')]"/>
+                <filter string="Payment" name="payment" domain="[('template_type', '=', 'payment')]"/>
+                <filter string="Welcome" name="welcome" domain="[('template_type', '=', 'welcome')]"/>
+                <filter string="Follow-up" name="followup" domain="[('template_type', '=', 'followup')]"/>
+                <filter string="Promotion" name="promotion" domain="[('template_type', '=', 'promotion')]"/>
+                <filter string="Custom" name="custom" domain="[('template_type', '=', 'custom')]"/>
+
+                <group expand="0" string="Group By">
+                <filter string="Template Type" name="group_type"
+                    context="{'group_by': 'template_type'}"/>
+                <filter string="Model" name="group_model"
+                    context="{'group_by': 'model_id'}"/>
+                </group>
+            </search>
             </field>
         </record>
+
 
         <!-- SMS Template Action -->
         <record id="action_sms_template" model="ir.actions.act_window">
