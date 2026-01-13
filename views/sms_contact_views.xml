@@ -118,15 +118,18 @@
                     <field name="email"/>
                     <field name="student_id"/>
                     <field name="department_id"/>
+                    <separator/>
                     <filter string="Opted In" name="opted_in" domain="[('opt_in', '=', True)]"/>
                     <filter string="Opted Out" name="opted_out" domain="[('opt_in', '=', False)]"/>
                     <filter string="Blacklisted" name="blacklisted" domain="[('blacklisted', '=', True)]"/>
+                    <separator/>
                     <filter string="Students" name="students" domain="[('contact_type', '=', 'student')]"/>
                     <filter string="Staff" name="staff" domain="[('contact_type', '=', 'staff')]"/>
                     <filter string="External" name="external" domain="[('contact_type', '=', 'external')]"/>
+                    <separator/>
                     <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                     <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
-                    <group expand="0" string="Group By">
+                    <group>
                         <filter string="Contact Type" name="group_contact_type" context="{'group_by': 'contact_type'}"/>
                         <filter string="Department" name="group_department" context="{'group_by': 'department_id'}"/>
                         <filter string="Opt-in Status" name="group_opt_in" context="{'group_by': 'opt_in'}"/>

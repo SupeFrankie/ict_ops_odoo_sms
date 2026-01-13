@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- ==================== SMS CLUB VIEWS ==================== -->
+        <!-- SMS CLUB VIEWS -->
         
         <!-- SMS Club list View -->
         <record id="view_sms_club_list" model="ir.ui.view">
@@ -132,7 +132,7 @@
                     <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                     <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
                     
-                    <group expand="0" string="Group By">
+                    <group>
                         <filter string="Active Status" name="group_active" context="{'group_by': 'active'}"/>
                     </group>
                 </search>

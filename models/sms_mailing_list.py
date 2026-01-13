@@ -26,7 +26,7 @@ except ImportError:
 class SMSMailingList(models.Model):
     """Mailing lists for grouping contacts."""
     
-    _name = 'sms.mailing_list'
+    _name = 'sms.mailing.list'
     _description = 'SMS Mailing List'
     _order = 'name'
     _rec_name = 'name'

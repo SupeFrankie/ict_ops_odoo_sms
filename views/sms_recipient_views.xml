@@ -54,7 +54,7 @@
                     <filter string="Sent" name="sent" domain="[('status', '=', 'sent')]"/>
                     <filter string="Failed" name="failed" domain="[('status', '=', 'failed')]"/>
                     <filter string="Sent Date" name="sent_date" date="sent_date"/>
-                    <group expand="0" string="Group By">
+                    <group>
                         <filter string="Campaign" name="group_campaign" context="{'group_by': 'campaign_id'}"/>
                         <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
                         <filter string="Sent Date" name="group_sent_date" context="{'group_by': 'sent_date'}"/>

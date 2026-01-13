@@ -44,7 +44,7 @@
                     <field name="reason"/>
                     <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                     <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
-                    <group expand="0" string="Group By">
+                    <group>
                         <filter string="Reason" name="group_reason" context="{'group_by': 'reason'}"/>
                         <filter string="Create Date" name="group_create_date" context="{'group_by': 'create_date'}"/>
                     </group>

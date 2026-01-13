@@ -75,7 +75,7 @@ class SMSMessage(models.Model):
     )
     
     mailing_list_id = fields.Many2one(
-        'sms.mailing_list',
+        'sms.mailing.list',
         string='Mailing List',
         help='Send to all contacts in this list'
     )

@@ -100,7 +100,7 @@
                     <filter string="Completed" name="completed" domain="[('status', '=', 'completed')]"/>
                     <filter string="Cancelled" name="cancelled" domain="[('status', '=', 'cancelled')]"/>
                     <filter string="Scheduled Date" name="schedule_date" date="schedule_date"/>
-                    <group expand="0" string="Group By">
+                    <group>
                         <filter string="Status" name="group_status" context="{'group_by': 'status'}"/>
                         <filter string="Gateway" name="group_gateway" context="{'group_by': 'gateway_id'}"/>
                         <filter string="Schedule Date" name="group_schedule_date" context="{'group_by': 'schedule_date'}"/>

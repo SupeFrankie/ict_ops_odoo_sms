@@ -87,7 +87,7 @@ class SMSContact(models.Model):
     )
     
     mailing_list_ids = fields.Many2many(
-        'sms.mailing_list',
+        'sms.mailing.list',
         string='Mailing Lists',
         help='Lists this contact is subscribed to'
     )

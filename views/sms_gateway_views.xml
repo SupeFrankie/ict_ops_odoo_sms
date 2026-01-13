@@ -33,8 +33,8 @@
                             <group string="Gateway Credentials">
                                 <field name="sender_id"/>
                                 <field name="api_key" password="True"/>
-                                <field name="username" attrs="{'invisible': [('gateway_type', '!=', 'africastalking')], 'required': [('gateway_type', '=', 'africastalking')]}"/>
-                                <field name="api_url" attrs="{'invisible': [('gateway_type', '!=', 'custom')], 'required': [('gateway_type', '=', 'custom')]}"/>
+                                <field name="username" invisible="gateway_type != 'africastalking'" required="gateway_type == 'africastalking'"/>
+                                <field name="api_url" invisible="gateway_type != 'custom'" required="gateway_type == 'custom'"/>
                             </group>
                         </group>
                         <footer>
