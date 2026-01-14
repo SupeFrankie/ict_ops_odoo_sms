@@ -111,7 +111,7 @@
                                     </div>
                                 </div>
                                 <div class="o_kanban_record_body">
-                                    <i class="fa fa-users"/> <field name="member_count"/> members
+                                    <i class="fa fa-users" title="Members"/> <field name="member_count"/> members
                                 </div>
                             </div>
                         </t>

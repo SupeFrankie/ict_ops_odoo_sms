@@ -19,7 +19,7 @@ class SmsGatewayConfiguration(models.Model):
     # Common fields
     api_key = fields.Char(string='API Key', required=True)
     api_secret = fields.Char(string='API Secret/Auth Token')
-    sender_id = fields.Char(string='Sender ID/Phone Number', required=True)
+    sender_id = fields.Char(string='Sender ID/Phone Number', required=False)
     
     # Africa's Talking specific
     username = fields.Char(string='Username')
@@ -59,29 +59,55 @@ class SmsGatewayConfiguration(models.Model):
     def _send_africastalking(self, phone_number, message):
         """Send SMS via Africa's Talking"""
         try:
-            url = 'https://api.africastalking.com/version1/messaging'
+            test_usernames = ['sandbox', 'test', 'trial', 'demo', 'testing']
+            is_sandbox = self.username and self.username.lower() in test_usernames
+
+            url = (
+                'https://api.sandbox.africastalking.com/version1/messaging'
+                if is_sandbox else
+                'https://api.africastalking.com/version1/messaging'
+            )
+            _logger.info(
+                "Using Africa's Talking %s environment",
+                "SANDBOX" if is_sandbox else "PRODUCTION"
+            )
+
             headers = {
                 'apiKey': self.api_key,
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Accept': 'application/json'
             }
+
             data = {
                 'username': self.username,
                 'to': phone_number,
                 'message': message,
-                'from': self.sender_id
             }
-            
+
+            if self.sender_id and not is_sandbox:
+                data['from'] = self.sender_id
+                _logger.info("Using sender ID: %s", self.sender_id)
+            elif is_sandbox:
+                _logger.info("Sandbox mode: sender ID ignored")
+
             response = requests.post(url, headers=headers, data=data, timeout=30)
             response.raise_for_status()
-            
+
             result = response.json()
-            _logger.info(f"SMS sent successfully via Africa's Talking: {result}")
-            return True, result
-            
-        except Exception as e:
-            _logger.error(f"Error sending SMS via Africa's Talking: {str(e)}")
-            return False, str(e)
+            _logger.info("Africa's Talking response: %s", result)
+
+            recipients = result.get('SMSMessageData', {}).get('Recipients', [])
+            if recipients:
+                _logger.info("SMS sent successfully to %d recipient(s)", len(recipients))
+                return True, result
+            else:
+                error_msg = f"Failed to send: {result}"
+                _logger.error(error_msg)
+                return False, error_msg
+
+        except requests.exceptions.RequestException as e:
+            _logger.error("Africa's Talking API error: %s", str(e))
+            return False, f"Failed to send SMS: {str(e)}"
     
     def _send_custom(self, phone_number, message):
         """Send SMS via Custom API"""

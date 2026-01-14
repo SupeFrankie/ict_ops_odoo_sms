@@ -54,7 +54,7 @@
 
         <!-- SMS Gateway Menu Item -->
         <menuitem id="menu_sms_gateway"
-                  name="SMS Gateways"
+                  name="Gateway Configuration"
                   parent="menu_sms_marketing_config"
                   action="action_sms_gateway_configuration"
                   sequence="10"/>

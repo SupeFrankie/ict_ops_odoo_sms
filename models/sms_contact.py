@@ -228,15 +228,14 @@ class SMSContact(models.Model):
         }
     
     @api.model
-    def create(self, vals):
-        if 'mobile' in vals:
-            vals['mobile'] = self._clean_phone(vals['mobile'])
-        
-        if vals.get('opt_in') and 'opt_in_date' not in vals:
-            vals['opt_in_date'] = fields.Datetime.now()
-        
-        return super(SMSContact, self).create(vals)
-    
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('opt_in') and 'opt_in_date' not in vals:
+                vals['opt_in_date'] = fields.Datetime.now()
+            if not vals.get('opt_in') and 'opt_out_date' not in vals:
+                vals['opt_out_date'] = fields.Datetime.now()
+        return super(SMSContact, self).create(vals_list)
+
     def write(self, vals):
         if 'mobile' in vals:
             vals['mobile'] = self._clean_phone(vals['mobile'])
