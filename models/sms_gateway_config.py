@@ -72,11 +72,11 @@ class SmsGatewayConfiguration(models.Model):
                     time.sleep(sleep_time)
                     continue
                 else:
-                    # 3. If we ran out of retries, return the error
+                    # 3. No more retries, return error
                     return False, f"Network failed after {max_retries} attempts: {str(e)}"
             
             except Exception as e:
-                # 4. If it's a generic code error (not network), fail immediately
+                # 4. Generic code error (not network), fail immediately
                 return False, str(e)
     
     # Send via AT
