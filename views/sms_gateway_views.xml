@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- list/List View -->
         <record id="view_sms_gateway_configuration_list" model="ir.ui.view">
             <field name="name">sms.gateway.configuration.list</field>
             <field name="model">sms.gateway.configuration</field>
@@ -16,7 +15,6 @@
             </field>
         </record>
 
-        <!-- Form View -->
         <record id="view_sms_gateway_configuration_form" model="ir.ui.view">
             <field name="name">sms.gateway.configuration.form</field>
             <field name="model">sms.gateway.configuration</field>
@@ -39,8 +37,8 @@
                             <group string="Gateway Credentials">
                                 <field name="sender_id" placeholder="e.g. +254..."/>
                                 <field name="api_key" password="True"/>
-                                <field name="username" attrs="{'invisible': [('gateway_type', '!=', 'africastalking')], 'required': [('gateway_type', '=', 'africastalking')]}"/>
-                                <field name="api_url" attrs="{'invisible': [('gateway_type', '!=', 'custom')], 'required': [('gateway_type', '=', 'custom')]}"/>
+                                <field name="username" invisible="gateway_type != 'africastalking'" required="gateway_type == 'africastalking'"/>
+                                <field name="api_url" invisible="gateway_type != 'custom'" required="gateway_type == 'custom'"/>
                             </group>
                         </group>
                     </sheet>
@@ -48,19 +46,11 @@
             </field>
         </record>
 
-        <!-- Action -->
         <record id="action_sms_gateway_configuration" model="ir.actions.act_window">
             <field name="name">SMS Gateways</field>
             <field name="res_model">sms.gateway.configuration</field>
-            <field name="view_mode">list,form</field>
-            <field name="help" type="html">
-              <p class="o_view_nocontent_smiling_face">
-                Create your first SMS Gateway
-              </p>
-            </field>
-        </record>
+            <field name="view_mode">list,form</field> </record>
 
-        <!-- Menu Item -->
         <menuitem id="menu_sms_gateway"
                   name="Gateway Configuration"
                   parent="menu_sms_marketing_config"

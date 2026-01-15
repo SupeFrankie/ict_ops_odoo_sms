@@ -10,8 +10,8 @@ Order of import matters because of dependencies:
 3. Finally messages and templates
 """
 
-from . import sms_gateway_config
 from . import sms_blacklist
+from . import sms_gateway_config
 from . import sms_contact
 from . import sms_template
 from . import sms_mailing_list
