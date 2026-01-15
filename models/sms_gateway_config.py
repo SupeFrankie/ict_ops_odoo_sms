@@ -59,55 +59,87 @@ class SmsGatewayConfiguration(models.Model):
     def _send_africastalking(self, phone_number, message):
         """Send SMS via Africa's Talking"""
         try:
-            test_usernames = ['sandbox', 'test', 'trial', 'demo', 'testing']
-            is_sandbox = self.username and self.username.lower() in test_usernames
+            # Strict 'sandbox' only
+            is_sandbox = self.username and self.username.strip().lower() == 'sandbox'
 
-            url = (
-                'https://api.sandbox.africastalking.com/version1/messaging'
-                if is_sandbox else
-                'https://api.africastalking.com/version1/messaging'
-            )
-            _logger.info(
-                "Using Africa's Talking %s environment",
-                "SANDBOX" if is_sandbox else "PRODUCTION"
-            )
 
+            if is_sandbox:
+                url = 'https://api.sandbox.africastalking.com/version1/messaging'
+                _logger.info("Using Africa's Talking SANDBOX environment")
+            else:
+                url = 'https://api.africastalking.com/version1/messaging'
+                _logger.info("Using Africa's Talking PRODUCTION environment")
+
+            # Headers per documentation
             headers = {
-                'apiKey': self.api_key,
+                'Accept': 'application/json',
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Accept': 'application/json'
+                'apiKey': self.api_key  
             }
 
+            # Ensure phone number has country code
+            phone = phone_number.strip()
+            if not phone.startswith('+'):
+                if phone.startswith('0'):
+                    phone = '+254' + phone[1:]
+                elif phone.startswith('254'):
+                    phone = '+' + phone
+                else:
+                    phone = '+254' + phone
+
+            # Payload - per bulk SMS docs
             data = {
                 'username': self.username,
-                'to': phone_number,
+                'to': phone,
                 'message': message,
             }
 
+            # Only add sender_id for production (sandbox ignores it)
             if self.sender_id and not is_sandbox:
                 data['from'] = self.sender_id
                 _logger.info("Using sender ID: %s", self.sender_id)
             elif is_sandbox:
                 _logger.info("Sandbox mode: sender ID ignored")
 
+            _logger.info("Sending to: %s", phone)
+            _logger.info("Username: %s", self.username)
+
+            # Make request
             response = requests.post(url, headers=headers, data=data, timeout=30)
+
+            # Log response
+            _logger.info("Response Status: %d", response.status_code)
+            _logger.info("Response Body: %s", response.text)
+
             response.raise_for_status()
 
             result = response.json()
-            _logger.info("Africa's Talking response: %s", result)
 
-            recipients = result.get('SMSMessageData', {}).get('Recipients', [])
+            # Check for successful delivery
+            sms_data = result.get('SMSMessageData', {})
+            recipients = sms_data.get('Recipients', [])
+            
             if recipients:
-                _logger.info("SMS sent successfully to %d recipient(s)", len(recipients))
+                # Log each recipient status
+                for recipient in recipients:
+                    status = recipient.get('status', 'Unknown')
+                    number = recipient.get('number', phone_number)
+                    _logger.info("Recipient %s: %s", number, status)
                 return True, result
             else:
-                error_msg = f"Failed to send: {result}"
-                _logger.error(error_msg)
+                error_msg = sms_data.get('Message', 'Unknown error')
+                _logger.error("AT Error: %s", error_msg)
                 return False, error_msg
 
+        except requests.exceptions.HTTPError as e:
+            _logger.error("HTTP Error: %s - %s", e.response.status_code, e.response.text)
+            return False, f"HTTP {e.response.status_code}: {e.response.text}"
         except requests.exceptions.RequestException as e:
-            _logger.error("Africa's Talking API error: %s", str(e))
-            return False, f"Failed to send SMS: {str(e)}"
+            _logger.error("Request Error: %s", str(e))
+            return False, f"Request failed: {str(e)}"
+        except Exception as e:
+            _logger.error("Unexpected error: %s", str(e))
+            return False, f"Error: {str(e)}"
     
     def _send_custom(self, phone_number, message):
         """Send SMS via Custom API"""
@@ -128,18 +160,18 @@ class SmsGatewayConfiguration(models.Model):
                 response = requests.get(self.api_url, headers=headers, params=data, timeout=30)
             
             response.raise_for_status()
-            _logger.info(f"SMS sent successfully via Custom API")
+            _logger.info("SMS sent successfully via Custom API")
             return True, response.text
             
         except Exception as e:
-            _logger.error(f"Error sending SMS via Custom API: {str(e)}")
+            _logger.error("Error sending SMS via Custom API: %s", str(e))
             return False, str(e)
     
     def test_connection(self):
         """Test the gateway connection"""
         self.ensure_one()
         test_message = "Test message from Odoo SMS Module"
-        test_number = self.sender_id  # Send test to sender number
+        test_number = '+254700000000'
         
         success, result = self.send_sms(test_number, test_message)
         
