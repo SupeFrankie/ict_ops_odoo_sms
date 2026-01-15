@@ -2,6 +2,7 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 import requests
 import logging
+import time
 
 _logger = logging.getLogger(__name__)
 
@@ -46,15 +47,37 @@ class SmsGatewayConfiguration(models.Model):
                     other_defaults.write({'is_default': False})
     
     def send_sms(self, phone_number, message):
-        """Send SMS through configured gateway"""
+        """Send SMS through configured gateway with Retry Logic"""
         self.ensure_one()
         
-        if self.gateway_type == 'africastalking':
-            return self._send_africastalking(phone_number, message)
-        elif self.gateway_type == 'custom':
-            return self._send_custom(phone_number, message)
-        else:
-            raise ValidationError('Unsupported gateway type')
+        # Settings for retries
+        max_retries = 3
+        
+        for attempt in range(max_retries):
+            try:
+                # 1. Attempt to send based on gateway type
+                if self.gateway_type == 'africastalking':
+                    return self._send_africastalking(phone_number, message)
+                elif self.gateway_type == 'custom':
+                    return self._send_custom(phone_number, message)
+                else:
+                    return False, "Unsupported gateway type"
+
+            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+                # 2. If it's a network error, wait and try again
+                _logger.warning(f"Network error sending SMS (Attempt {attempt + 1}/{max_retries}): {str(e)}")
+                
+                if attempt < max_retries - 1:
+                    sleep_time = 2 ** attempt 
+                    time.sleep(sleep_time)
+                    continue
+                else:
+                    # 3. If we ran out of retries, return the error
+                    return False, f"Network failed after {max_retries} attempts: {str(e)}"
+            
+            except Exception as e:
+                # 4. If it's a generic code error (not network), fail immediately
+                return False, str(e)
     
     # Send via AT
     def _send_africastalking(self, phone_number, message):
